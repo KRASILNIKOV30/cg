@@ -17,7 +17,9 @@ private:
 		wxPaintDC dc(this);
 		wxImage image(800, 600);
 		Painter painter({ 800, 600 });
-		painter.DrawCircle(image, m_center, m_radius, m_color);
+		painter.DrawCircle(image, { 200, 300 }, 100, m_color);
+		painter.DrawCircleWithAntialiasing(image, { 350, 300 }, 100, m_color);
+
 		dc.DrawBitmap(wxBitmap(image), 0, 0, false);
 	}
 
