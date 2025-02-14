@@ -16,7 +16,8 @@ private:
 	{
 		wxPaintDC dc(this);
 		wxImage image(800, 600);
-		DrawCircle(image, m_center, m_radius, m_color);
+		Painter painter({ 800, 600 });
+		painter.DrawCircle(image, m_center, m_radius, m_color);
 		dc.DrawBitmap(wxBitmap(image), 0, 0, false);
 	}
 
