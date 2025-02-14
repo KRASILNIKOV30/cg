@@ -14,7 +14,6 @@ public:
 	MyFrame()
 		: wxFrame(nullptr, wxID_ANY, "Initials", wxDefaultPosition, wxSize(WIDTH, HEIGHT))
 	{
-		SetSize(WIDTH, HEIGHT);
 		m_model = std::make_shared<Model>();
 		m_controller = std::make_shared<Controller>(m_model);
 		m_view = std::make_shared<View>(this, m_model, m_controller);
@@ -31,13 +30,13 @@ class MyApp final : public wxApp
 public:
 	bool OnInit() override
 	{
-		m_frame = std::make_unique<MyFrame>();
+		m_frame = new MyFrame;
 		m_frame->Show(true);
 		return true;
 	}
 
 private:
-	std::unique_ptr<MyFrame> m_frame;
+	MyFrame* m_frame = nullptr;
 };
 
 wxIMPLEMENT_APP(MyApp);
