@@ -11,7 +11,7 @@ struct Size
 	double height;
 };
 
-struct Position
+struct Point
 {
 	double x;
 	double y;
@@ -19,7 +19,7 @@ struct Position
 
 struct Letter
 {
-	Position position{};
+	Point position{};
 	Size size = { 80, 100 };
 	double velocity = 0;
 };
