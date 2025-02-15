@@ -30,21 +30,20 @@ public:
 
 	void DrawCircle(wxImage& image, const Point center, const int radius, Color color)
 	{
-		const auto [r, g, b] = color;
 		int x = 0;
 		int y = radius;
 		int delta = 3 - 2 * y;
 
 		while (y >= x)
 		{
-			SetPixel(image, center.x + x, center.y + y, r, g, b);
-			SetPixel(image, center.x - x, center.y + y, r, g, b);
-			SetPixel(image, center.x + x, center.y - y, r, g, b);
-			SetPixel(image, center.x - x, center.y - y, r, g, b);
-			SetPixel(image, center.x + y, center.y + x, r, g, b);
-			SetPixel(image, center.x - y, center.y + x, r, g, b);
-			SetPixel(image, center.x + y, center.y - x, r, g, b);
-			SetPixel(image, center.x - y, center.y - x, r, g, b);
+			SetPixel(image, center.x + x, center.y + y, color);
+			SetPixel(image, center.x - x, center.y + y, color);
+			SetPixel(image, center.x + x, center.y - y, color);
+			SetPixel(image, center.x - x, center.y - y, color);
+			SetPixel(image, center.x + y, center.y + x, color);
+			SetPixel(image, center.x - y, center.y + x, color);
+			SetPixel(image, center.x + y, center.y - x, color);
+			SetPixel(image, center.x - y, center.y - x, color);
 
 			delta += delta < 0
 				? 4 * x + 6
@@ -55,21 +54,20 @@ public:
 
 	void DrawCircleWithAntialiasing(wxImage& image, const Point center, const int radius, Color color)
 	{
-		const auto [r, g, b] = color;
 		int x = 0;
 		int y = radius;
 		int delta = 3 - 2 * y;
 
 		while (y >= x)
 		{
-			DrawPixelWithAntialiasing(image, center.x + x, center.y + y, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x - x, center.y + y, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x + x, center.y - y, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x - x, center.y - y, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x + y, center.y + x, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x - y, center.y + x, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x + y, center.y - x, r, g, b, center.x, center.y, radius);
-			DrawPixelWithAntialiasing(image, center.x - y, center.y - x, r, g, b, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x + x, center.y + y, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x - x, center.y + y, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x + x, center.y - y, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x - x, center.y - y, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x + y, center.y + x, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x - y, center.y + x, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x + y, center.y - x, color, center.x, center.y, radius);
+			DrawPixelWithAntialiasing(image, center.x - y, center.y - x, color, center.x, center.y, radius);
 
 			delta += delta < 0
 				? 4 * x + 6
@@ -78,37 +76,30 @@ public:
 		}
 	}
 
-private:
-	void DrawPixelWithAntialiasing(wxImage& image, int x, int y, int r, int g, int b, int cx, int cy, int radius)
+	void DrawCircleWithThickness(wxImage& image, const Point center, const int outerRadius, const int thickness, Color color)
 	{
-		const auto [width, height] = m_canvasSize;
-		if (x < 0 || x >= width || y < 0 || y >= height)
-		{
-			return;
-		}
-
-		// Рассчитываем расстояние до окружности (чем меньше расстояние, тем ярче пиксель)
-		float distance = std::sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-		float alpha = std::max(0.0f, 1.0f - std::abs(distance - radius) * 1.5f); // плавное уменьшение яркости
-
-		// Если пиксель близко к окружности, то применяем антиалиасинг
-		if (alpha > 0.0f)
-		{
-			// Учитываем градацию альфа-прозрачности (для сглаживания)
-			int finalR = static_cast<int>(r * alpha);
-			int finalG = static_cast<int>(g * alpha);
-			int finalB = static_cast<int>(b * alpha);
-
-			SetPixel(image, x, y, finalR, finalG, finalB);
-		}
+		DrawCircleWithAntialiasing(image, center, outerRadius, color);
+		DrawCircle(image, center, outerRadius - 1, color);
 	}
 
-	void SetPixel(wxImage& image, int x, int y, int r, int g, int b)
+private:
+	void DrawPixelWithAntialiasing(wxImage& image, int x, int y, Color color, int cx, int cy, int radius)
 	{
 		const auto [width, height] = m_canvasSize;
+
+		const auto distance = std::sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+		const float alpha = std::max(0, 1 - std::abs(distance - radius) * 1.5);
+
+		SetPixel(image, x, y, color, alpha);
+	}
+
+	void SetPixel(wxImage& image, int x, int y, Color color, float alpha = 1.0)
+	{
+		const auto [width, height] = m_canvasSize;
+		const auto [r, g, b] = color;
 		if (x >= 0 && x < width && y >= 0 && y < height)
 		{
-			image.SetRGB(x, y, r, g, b);
+			image.SetRGB(x, y, r * alpha, g * alpha, b * alpha);
 		}
 	}
 

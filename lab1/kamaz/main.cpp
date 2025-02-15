@@ -15,13 +15,11 @@ public:
 		: wxFrame(nullptr, wxID_ANY, "Initials", wxDefaultPosition, wxSize(WIDTH, HEIGHT))
 	{
 		m_model = std::make_shared<Model>();
-		m_controller = std::make_shared<Controller>(m_model);
-		m_view = std::make_shared<View>(this, m_model, m_controller);
+		// можно не хранить (исправлено)
+		new View(this, m_model, std::make_unique<Controller>(m_model));
 	}
 
 private:
-	std::shared_ptr<View> m_view;
-	std::shared_ptr<Controller> m_controller;
 	std::shared_ptr<Model> m_model;
 };
 

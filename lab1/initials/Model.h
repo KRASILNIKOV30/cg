@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-constexpr int ACCELERATION = 200;
+constexpr int ACCELERATION = 100;
 
 struct Size
 {
@@ -69,8 +69,7 @@ private:
 	{
 		if (letter.position.y + letter.size.height >= m_canvasSize.height && letter.velocity >= 0)
 		{
-			letter.velocity = -1 * letter.velocity;
-			std::cout << letter.position.y << std::endl;
+			letter.velocity *= -1;
 		}
 		else
 		{

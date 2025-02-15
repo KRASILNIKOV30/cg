@@ -12,6 +12,7 @@ add_executable(kamaz
         kamaz/Model.h
         kamaz/View.h
         kamaz/Controller.h
+        kamaz/Drawing.h
 )
 
 add_executable(circle
