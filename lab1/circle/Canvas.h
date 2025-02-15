@@ -19,9 +19,9 @@ private:
 		image.SetType(wxBITMAP_TYPE_PNG);
 		image.InitAlpha();
 		Painter painter({ 800, 600 });
-		painter.DrawCircle(image, { 200, 300 }, 100, m_color);
-		painter.DrawCircleWithAntialiasing(image, { 410, 300 }, 100, m_color);
-
+		// painter.DrawCircle(image, { 200, 300 }, 100, m_color);
+		// painter.DrawCircleWithAntialiasing(image, { 410, 300 }, 100, m_color);
+		painter.DrawCircleWithThickness(image, { 400, 300 }, 4, 4, m_color);
 		dc.DrawBitmap(wxBitmap(image), 0, 0, true);
 	}
 

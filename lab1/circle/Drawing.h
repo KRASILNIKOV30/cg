@@ -76,10 +76,72 @@ public:
 		}
 	}
 
-	void DrawCircleWithThickness(wxImage& image, const Point center, const int outerRadius, const int thickness, Color color)
+	void xLine(wxImage& image, int x1, int x2, int y, Color color)
 	{
-		DrawCircleWithAntialiasing(image, center, outerRadius, color);
-		DrawCircle(image, center, outerRadius - 1, color);
+		while (x1 <= x2)
+		{
+			SetPixel(image, x1++, y, color);
+		}
+	}
+
+	void yLine(wxImage& image, int x, int y1, int y2, Color color)
+	{
+		while (y1 <= y2)
+		{
+			SetPixel(image, x, y1++, color);
+		}
+	}
+
+	void DrawCircleWithThickness(wxImage& image, Point center, int inner, int outer, Color color)
+	{
+		const auto xc = center.x;
+		const auto yc = center.y;
+		int xo = outer;
+		int xi = inner;
+		int y = 0;
+		int erro = 1 - xo;
+		int erri = 1 - xi;
+
+		while (xo >= y)
+		{
+			xLine(image, xc + xi, xc + xo, yc + y, color);
+			yLine(image, xc + y, yc + xi, yc + xo, color);
+			xLine(image, xc - xo, xc - xi, yc + y, color);
+			yLine(image, xc - y, yc + xi, yc + xo, color);
+			xLine(image, xc - xo, xc - xi, yc - y, color);
+			yLine(image, xc - y, yc - xo, yc - xi, color);
+			xLine(image, xc + xi, xc + xo, yc - y, color);
+			yLine(image, xc + y, yc - xo, yc - xi, color);
+
+			y++;
+
+			if (erro < 0)
+			{
+				erro += 2 * y + 1;
+			}
+			else
+			{
+				xo--;
+				erro += 2 * (y - xo + 1);
+			}
+
+			if (y > inner)
+			{
+				xi = y;
+			}
+			else
+			{
+				if (erri < 0)
+				{
+					erri += 2 * y + 1;
+				}
+				else
+				{
+					xi--;
+					erri += 2 * (y - xi + 1);
+				}
+			}
+		}
 	}
 
 private:
@@ -88,7 +150,7 @@ private:
 		const auto [width, height] = m_canvasSize;
 
 		const auto distance = std::sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-		const float alpha = std::max(0, 1 - std::abs(distance - radius) * 1.5);
+		const float alpha = std::max<float>(0, 1 - std::abs(distance - radius) * 1.5);
 
 		SetPixel(image, x, y, color, alpha);
 	}
