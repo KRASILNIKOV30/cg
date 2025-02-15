@@ -142,7 +142,7 @@ private:
 		const auto [width, height] = m_canvasSize;
 
 		const auto distance = std::sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-		const float alpha = std::max<float>(0, 1 - std::abs(distance - radius) * 1.5);
+		const float alpha = std::max<float>(0, 1.0f - std::abs(distance - radius) * 1.5);
 
 		SetPixel(image, x, y, color, alpha);
 	}
