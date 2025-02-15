@@ -92,54 +92,46 @@ public:
 		}
 	}
 
+	void DrawFillCircle(wxImage& image, const Point center, const int radius, Color color)
+	{
+		DrawCircleWithThickness(image, center, 0, radius, color);
+	}
+
 	void DrawCircleWithThickness(wxImage& image, Point center, int inner, int outer, Color color)
 	{
 		const auto xc = center.x;
 		const auto yc = center.y;
-		int xo = outer;
-		int xi = inner;
+		int xOut = outer;
+		int xIn = inner;
 		int y = 0;
-		int erro = 1 - xo;
-		int erri = 1 - xi;
+		int deltaOut = 1 - xOut;
+		int deltaIn = 1 - xIn;
 
-		while (xo >= y)
+		while (xOut >= y)
 		{
-			xLine(image, xc + xi, xc + xo, yc + y, color);
-			yLine(image, xc + y, yc + xi, yc + xo, color);
-			xLine(image, xc - xo, xc - xi, yc + y, color);
-			yLine(image, xc - y, yc + xi, yc + xo, color);
-			xLine(image, xc - xo, xc - xi, yc - y, color);
-			yLine(image, xc - y, yc - xo, yc - xi, color);
-			xLine(image, xc + xi, xc + xo, yc - y, color);
-			yLine(image, xc + y, yc - xo, yc - xi, color);
+			xLine(image, xc + xIn, xc + xOut, yc + y, color);
+			yLine(image, xc + y, yc + xIn, yc + xOut, color);
+			xLine(image, xc - xOut, xc - xIn, yc + y, color);
+			yLine(image, xc - y, yc + xIn, yc + xOut, color);
+			xLine(image, xc - xOut, xc - xIn, yc - y, color);
+			yLine(image, xc - y, yc - xOut, yc - xIn, color);
+			xLine(image, xc + xIn, xc + xOut, yc - y, color);
+			yLine(image, xc + y, yc - xOut, yc - xIn, color);
 
-			y++;
-
-			if (erro < 0)
-			{
-				erro += 2 * y + 1;
-			}
-			else
-			{
-				xo--;
-				erro += 2 * (y - xo + 1);
-			}
+			deltaOut += deltaOut < 0
+				? 4 * y + 6
+				: 4 * (y - xOut--) + 10;
+			++y;
 
 			if (y > inner)
 			{
-				xi = y;
+				xIn = y;
 			}
 			else
 			{
-				if (erri < 0)
-				{
-					erri += 2 * y + 1;
-				}
-				else
-				{
-					xi--;
-					erri += 2 * (y - xi + 1);
-				}
+				deltaIn += deltaIn < 0
+					? 4 * y + 6
+					: 4 * (y - xIn--) + 10;
 			}
 		}
 	}
