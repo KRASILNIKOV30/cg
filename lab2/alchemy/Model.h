@@ -10,6 +10,13 @@ struct Point
 {
 	int x;
 	int y;
+
+	Point& operator+=(Point const& point)
+	{
+		x += point.x;
+		y += point.y;
+		return *this;
+	}
 };
 
 struct Size
@@ -48,7 +55,7 @@ public:
 		for (const auto& element : elements)
 		{
 			const auto [type, name, img, combination] = element;
-			m_elements.emplace(type, ElementModel{ type, name, img, false });
+			m_elements.emplace(type, ElementModel{ type, name, img, !combination.has_value() });
 			m_combinations[combination->first].emplace(combination->second, type);
 		}
 	}
@@ -56,6 +63,11 @@ public:
 	[[nodiscard]] ScopedConnection DoOnUpdate(UpdateSlot const& slot)
 	{
 		return m_updateSignal.connect(slot);
+	}
+
+	[[nodiscard]] ScopedConnection DoOnCanvasUpdate(UpdateSlot const& slot)
+	{
+		return m_canvasUpdateSignal.connect(slot);
 	}
 
 	void ForEachCanvasElement(std::function<void(CanvasElement const&)> const& callback)
@@ -77,17 +89,17 @@ public:
 		}
 	}
 
-	void Move(size_t const id, Point const& position)
+	void Move(size_t const id, Point const& delta)
 	{
-		m_canvasElements.at(id).position = position;
-		m_updateSignal();
+		m_canvasElements.at(id).position += delta;
+		m_canvasUpdateSignal();
 	}
 
-	void Drop(size_t const id, Point const& position)
+	void Drop(size_t const id)
 	{
-		m_canvasElements.at(id).position = position;
 		CheckCombinations(id);
 		CheckTrash(id);
+		m_canvasUpdateSignal();
 		m_updateSignal();
 	}
 
@@ -141,9 +153,9 @@ private:
 		m_canvasElements.emplace(id, CanvasElement{
 			.id = id,
 			.type = type,
-			.position = position,
-			.img = model.img,
 			.name = model.name,
+			.img = model.img,
+			.position = position,
 		});
 	}
 
@@ -170,6 +182,7 @@ private:
 
 private:
 	UpdateSignal m_updateSignal;
+	UpdateSignal m_canvasUpdateSignal;
 	std::unordered_map<ElType, ElementModel> m_elements{};
 	std::unordered_map<size_t, CanvasElement> m_canvasElements{};
 	std::unordered_map<ElType, std::unordered_map<ElType, ElType>> m_combinations{};

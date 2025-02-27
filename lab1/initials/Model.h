@@ -51,12 +51,12 @@ public:
 		UpdateLetter(m_surname, deltaTime);
 		UpdateLetter(m_patronymic, deltaTime);
 
-		m_updateSignal();
+		m_canvasUpdateSignal();
 	}
 
 	[[nodiscard]] ScopedConnection DoOnUpdate(UpdateSlot const& slot)
 	{
-		return m_updateSignal.connect(slot);
+		return m_canvasUpdateSignal.connect(slot);
 	}
 
 	[[nodiscard]] Size GetCanvasSize() const
@@ -83,5 +83,5 @@ private:
 	Letter m_name = { 325, 100 };
 	Letter m_patronymic = { 500, 300 };
 	Size m_canvasSize = { 800, 600 };
-	UpdateSignal m_updateSignal;
+	UpdateSignal m_canvasUpdateSignal;
 };

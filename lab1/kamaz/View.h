@@ -37,7 +37,7 @@ private:
 		}
 	}
 
-	void OnMouseMove(wxMouseEvent& event)
+	void OnMouseMove(const wxMouseEvent& event)
 	{
 		m_controller->onMouseMove(event);
 	}

@@ -15,13 +15,13 @@ public:
 
 	[[nodiscard]] ScopedConnection DoOnUpdate(UpdateSlot const& slot)
 	{
-		return m_updateSignal.connect(slot);
+		return m_canvasUpdateSignal.connect(slot);
 	}
 
 	void SetPosition(Point const& position)
 	{
 		m_position = position;
-		m_updateSignal();
+		m_canvasUpdateSignal();
 	}
 
 	[[nodiscard]] Point GetPosition() const
@@ -31,5 +31,5 @@ public:
 
 private:
 	Point m_position = { 300, 300 };
-	UpdateSignal m_updateSignal;
+	UpdateSignal m_canvasUpdateSignal;
 };
