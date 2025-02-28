@@ -18,6 +18,7 @@ public:
 		  , m_controller(std::move(controller))
 	{
 		RenderButtons();
+		RenderSortButton();
 		m_connection = m_model->DoOnUpdate([&] {
 			RenderButtons();
 		});
@@ -42,6 +43,14 @@ private:
 				m_controller->onButtonClick(type);
 			});
 			++i;
+		});
+	}
+
+	void RenderSortButton() const
+	{
+		const auto button = new wxButton(m_buttonPanel, wxID_ANY, "Sort", wxPoint(270, 700));
+		button->Bind(wxEVT_BUTTON, [this](wxCommandEvent const& _) {
+			m_controller->Sort();
 		});
 	}
 

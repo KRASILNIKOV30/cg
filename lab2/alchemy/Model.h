@@ -55,11 +55,15 @@ public:
 		for (const auto& element : elements)
 		{
 			const auto [type, name, img, combination] = element;
-			m_elements.emplace(type, ElementModel{ type, name, img, !combination.has_value() });
+			m_elements.emplace(type, ElementModel{ type, name, img, false });
 			if (combination.has_value())
 			{
 				m_combinations[combination->first].emplace(combination->second, type);
 				m_combinations[combination->second].emplace(combination->first, type);
+			}
+			else
+			{
+				OpenElement(type);
 			}
 		}
 	}
@@ -98,11 +102,9 @@ public:
 		}
 	}
 
-	void ForEachElement(std::function<void(ElementModel const&)> const& callback)
+	void ForEachElement(std::function<void(ElementModel const&)> const& callback) const
 	{
-		for (const auto& element : m_elements
-		     | std::views::values
-		     | std::views::filter([](const auto& el) { return el.open; }))
+		for (const auto& element : m_openElements)
 		{
 			callback(element);
 		}
@@ -131,6 +133,14 @@ public:
 	[[nodiscard]] Point GetTrashPosition() const
 	{
 		return m_trashPosition;
+	}
+
+	void Sort()
+	{
+		std::ranges::sort(m_openElements, [&](const auto& a, const auto& b) {
+			return a.name < b.name;
+		});
+		m_updateSignal();
 	}
 
 private:
@@ -170,13 +180,13 @@ private:
 				(firstEl.position.y + secondEl.position.y) / 2
 			};
 			const auto newElementType = m_combinations.at(typeA).at(typeB);
-			m_elements.at(newElementType).open = true;
 			AddElement(newElementType, newElementPos);
 		}
 	}
 
 	void AddElement(ElType type, Point const& position)
 	{
+		OpenElement(type);
 		const auto id = m_id++;
 		const auto model = m_elements.at(type);
 		m_canvasElements.emplace(id, CanvasElement{
@@ -186,6 +196,16 @@ private:
 			.img = model.img,
 			.position = position,
 		});
+	}
+
+	void OpenElement(ElType type)
+	{
+		if (m_elements.at(type).open)
+		{
+			return;
+		}
+		m_elements.at(type).open = true;
+		m_openElements.emplace_back(m_elements.at(type));
 	}
 
 	std::vector<size_t> GetNearbyElementIds(size_t const targetId)
@@ -213,8 +233,9 @@ private:
 	UpdateSignal m_updateSignal;
 	UpdateSignal m_canvasUpdateSignal;
 	std::map<ElType, ElementModel> m_elements{};
+	std::vector<ElementModel> m_openElements{};
 	std::map<size_t, CanvasElement> m_canvasElements{};
 	std::unordered_map<ElType, std::unordered_map<ElType, ElType>> m_combinations{};
-	Point m_trashPosition = { 300, 600 };
+	Point m_trashPosition = { 270, 700 };
 	size_t m_id = 0;
 };

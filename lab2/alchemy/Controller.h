@@ -44,6 +44,11 @@ public:
 		}
 	}
 
+	void Sort()
+	{
+		m_model->Sort();
+	}
+
 private:
 	std::optional<size_t> m_dragElement;
 	std::optional<Point> m_startPosition = std::nullopt;
