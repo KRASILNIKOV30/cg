@@ -36,9 +36,12 @@ public:
 
 	void onMouseUp()
 	{
-		m_model->Drop(m_dragElement.value());
-		m_dragElement.reset();
-		m_startPosition.reset();
+		if (m_startPosition.has_value() && m_dragElement.has_value())
+		{
+			m_model->Drop(m_dragElement.value());
+			m_dragElement.reset();
+			m_startPosition.reset();
+		}
 	}
 
 private:

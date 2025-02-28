@@ -21,9 +21,9 @@ struct Element
 };
 
 const std::vector<Element> elements = {
-	{ ElType::FIRE, "Огонь", "fire.jpg" },
-	{ ElType::WATER, "Вода", "water.jpeg" },
-	{ ElType::GROUND, "Земля", "ground.jpeg" },
-	{ ElType::AIR, "Воздух", "air.jpg" },
-	{ ElType::LAVA, "Лава", "lava.jpeg", std::pair{ ElType::GROUND, ElType::FIRE } },
+	{ ElType::FIRE, "Fire", "fire.jpg" },
+	{ ElType::WATER, "Water", "water.jpeg" },
+	{ ElType::GROUND, "Ground", "ground.jpeg" },
+	{ ElType::AIR, "Air", "air.jpg" },
+	{ ElType::LAVA, "Lava", "lava.jpeg", std::pair{ ElType::GROUND, ElType::FIRE } },
 };

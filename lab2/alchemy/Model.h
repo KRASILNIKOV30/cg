@@ -42,7 +42,7 @@ struct CanvasElement
 	Point position;
 };
 
-constexpr int ACTION_DISTANCE = 50;
+constexpr int ACTION_DISTANCE = 30;
 
 class Model
 {
@@ -56,7 +56,11 @@ public:
 		{
 			const auto [type, name, img, combination] = element;
 			m_elements.emplace(type, ElementModel{ type, name, img, !combination.has_value() });
-			m_combinations[combination->first].emplace(combination->second, type);
+			if (combination.has_value())
+			{
+				m_combinations[combination->first].emplace(combination->second, type);
+				m_combinations[combination->second].emplace(combination->first, type);
+			}
 		}
 	}
 
@@ -70,22 +74,37 @@ public:
 		return m_canvasUpdateSignal.connect(slot);
 	}
 
-	void ForEachCanvasElement(std::function<void(CanvasElement const&)> const& callback)
+	void ForEachCanvasElement(std::function<bool(CanvasElement const&)> const& callback)
 	{
-		for (const auto& element : std::views::values(m_canvasElements))
+		for (const auto& element : m_canvasElements | std::views::values)
 		{
-			callback(element);
+			if (!callback(element))
+			{
+				return;
+			}
+		}
+	}
+
+	void ForEachCanvasElementReverse(std::function<bool(CanvasElement const&)> const& callback)
+	{
+		for (const auto& element : m_canvasElements
+		     | std::views::values
+		     | std::views::reverse)
+		{
+			if (!callback(element))
+			{
+				return;
+			}
 		}
 	}
 
 	void ForEachElement(std::function<void(ElementModel const&)> const& callback)
 	{
-		for (const auto& element : std::views::values(m_elements))
+		for (const auto& element : m_elements
+		     | std::views::values
+		     | std::views::filter([](const auto& el) { return el.open; }))
 		{
-			if (element.open)
-			{
-				callback(element);
-			}
+			callback(element);
 		}
 	}
 
@@ -106,6 +125,12 @@ public:
 	void CreateElement(ElType const type)
 	{
 		AddElement(type, Point{ 100, 100 });
+		m_canvasUpdateSignal();
+	}
+
+	[[nodiscard]] Point GetTrashPosition() const
+	{
+		return m_trashPosition;
 	}
 
 private:
@@ -120,6 +145,10 @@ private:
 
 	void CheckTrash(size_t const id)
 	{
+		if (!m_canvasElements.contains(id))
+		{
+			return;
+		}
 		if (ArePointsNearby(m_trashPosition, m_canvasElements.at(id).position))
 		{
 			m_canvasElements.erase(id);
@@ -132,7 +161,7 @@ private:
 		const auto secondEl = m_canvasElements.at(secondId);
 		const auto typeA = firstEl.type;
 		const auto typeB = secondEl.type;
-		if (m_combinations.at(typeA).contains(typeB))
+		if (m_combinations.contains(typeA) && m_combinations.at(typeA).contains(typeB))
 		{
 			m_canvasElements.erase(firstId);
 			m_canvasElements.erase(secondId);
@@ -183,8 +212,8 @@ private:
 private:
 	UpdateSignal m_updateSignal;
 	UpdateSignal m_canvasUpdateSignal;
-	std::unordered_map<ElType, ElementModel> m_elements{};
-	std::unordered_map<size_t, CanvasElement> m_canvasElements{};
+	std::map<ElType, ElementModel> m_elements{};
+	std::map<size_t, CanvasElement> m_canvasElements{};
 	std::unordered_map<ElType, std::unordered_map<ElType, ElType>> m_combinations{};
 	Point m_trashPosition = { 300, 600 };
 	size_t m_id = 0;

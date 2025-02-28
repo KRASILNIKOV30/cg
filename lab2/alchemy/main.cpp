@@ -14,8 +14,8 @@ public:
 	MyFrame()
 		: wxFrame(nullptr, wxID_ANY, "Initials", wxDefaultPosition, wxSize(WIDTH, HEIGHT))
 	{
-		wxSplitterWindow* splitter = new wxSplitterWindow(this, wxID_ANY);
-		wxPanel* buttonPanel = new wxPanel(splitter);
+		auto* splitter = new wxSplitterWindow(this, wxID_ANY);
+		auto* buttonPanel = new wxPanel(splitter);
 
 		splitter->SetSashGravity(0.5);
 
@@ -33,6 +33,7 @@ class MyApp final : public wxApp
 public:
 	bool OnInit() override
 	{
+		wxImage::AddHandler(new wxPNGHandler());
 		m_frame = new MyFrame;
 		m_frame->Show(true);
 		return true;

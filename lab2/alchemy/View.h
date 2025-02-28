@@ -34,16 +34,30 @@ private:
 			const auto [type, name, img, open] = element;
 			wxBitmap bitmap("res/" + img, wxBITMAP_TYPE_JPEG);
 			wxImage image = bitmap.ConvertToImage();
-			image.Rescale(50, 50);
+			image.Rescale(IMG_SIZE, IMG_SIZE);
 			bitmap = wxBitmap(image);
 			const auto pos = wxPoint((BUTTON_WIDTH + 10) * (i % BUTTONS_IN_ROW), BUTTON_HEIGHT * (i / BUTTONS_IN_ROW));
-			new wxBitmapButton(m_buttonPanel, wxID_ANY, bitmap, pos);
+			const auto button = new wxBitmapButton(m_buttonPanel, wxID_ANY, bitmap, pos);
+			button->Bind(wxEVT_BUTTON, [type, this](wxCommandEvent const& _) {
+				m_controller->onButtonClick(type);
+			});
 			++i;
 		});
 	}
 
 	void OnMouseDown(wxMouseEvent& event)
 	{
+		m_model->ForEachCanvasElementReverse([&](const CanvasElement& element) {
+			const auto [x, y] = element.position;
+			const auto deltaX = event.GetPosition().x - x;
+			const auto deltaY = event.GetPosition().y - y;
+			if (deltaX >= 0 && deltaX <= IMG_SIZE && deltaY >= 0 && deltaY <= IMG_SIZE)
+			{
+				m_controller->onElementClick(event, element.id);
+				return false;
+			}
+			return true;
+		});
 	}
 
 	void OnMouseMove(wxMouseEvent& event)
@@ -58,8 +72,34 @@ private:
 
 	void OnPaint(wxPaintEvent& event)
 	{
-		const wxPaintDC dc(this);
+		wxPaintDC dc(this);
+		const auto trashPosition = m_model->GetTrashPosition();
+		DrawImage(dc, "trash.png", trashPosition, wxBITMAP_TYPE_PNG);
+		m_model->ForEachCanvasElement([&](const CanvasElement& element) {
+			const auto [id, type, name, img, position] = element;
+			DrawImage(dc, img, position, wxBITMAP_TYPE_JPEG);
 
+			const auto [x, y] = position;
+			DrawText(dc, { x, y + IMG_SIZE + 5 }, name);
+
+			return true;
+		});
+	}
+
+	static void DrawImage(wxPaintDC& dc, std::string const& src, Point const& position, const wxBitmapType type)
+	{
+		wxBitmap bitmap("res/" + src, type);
+		wxImage image = bitmap.ConvertToImage();
+		image.Rescale(IMG_SIZE, IMG_SIZE);
+		bitmap = wxBitmap(image);
+		const auto pos = wxPoint(position.x, position.y);
+		dc.DrawBitmap(bitmap, pos);
+	}
+
+	static void DrawText(wxPaintDC& dc, Point const& position, std::string const& text)
+	{
+		const auto pos = wxPoint(position.x, position.y);
+		dc.DrawText(text, pos);
 	}
 
 private:
