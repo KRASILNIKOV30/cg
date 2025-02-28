@@ -84,7 +84,7 @@ private:
 	{
 		wxPaintDC dc(this);
 		const auto trashPosition = m_model->GetTrashPosition();
-		DrawImage(dc, "trash.png", trashPosition, wxBITMAP_TYPE_PNG);
+		DrawImage(dc, "trash.jpg", trashPosition, wxBITMAP_TYPE_PNG);
 		m_model->ForEachCanvasElement([&](const CanvasElement& element) {
 			const auto [id, type, name, img, position] = element;
 			DrawImage(dc, img, position, wxBITMAP_TYPE_JPEG);
