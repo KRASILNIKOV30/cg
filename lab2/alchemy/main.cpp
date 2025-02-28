@@ -12,7 +12,7 @@ class MyFrame final : public wxFrame
 {
 public:
 	MyFrame()
-		: wxFrame(nullptr, wxID_ANY, "Initials", wxDefaultPosition, wxSize(WIDTH, HEIGHT))
+		: wxFrame(nullptr, wxID_ANY, "Alchemy", wxDefaultPosition, wxSize(WIDTH, HEIGHT))
 	{
 		auto* splitter = new wxSplitterWindow(this, wxID_ANY);
 		auto* buttonPanel = new wxPanel(splitter);

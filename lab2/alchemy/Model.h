@@ -47,8 +47,10 @@ constexpr int ACTION_DISTANCE = 30;
 class Model
 {
 public:
-	using UpdateSignal = EmptySignal;
+	using UpdateSignal = Signal<void(std::optional<std::string> const& newElement)>;
 	using UpdateSlot = UpdateSignal::slot_type;
+	using UpdateCanvasSignal = EmptySignal;
+	using UpdateCanvasSlot = UpdateCanvasSignal::slot_type;
 
 	explicit Model(std::vector<Element> const& elements)
 	{
@@ -65,6 +67,7 @@ public:
 			{
 				OpenElement(type);
 			}
+			m_newElementOpened.reset();
 		}
 	}
 
@@ -73,7 +76,7 @@ public:
 		return m_updateSignal.connect(slot);
 	}
 
-	[[nodiscard]] ScopedConnection DoOnCanvasUpdate(UpdateSlot const& slot)
+	[[nodiscard]] ScopedConnection DoOnCanvasUpdate(UpdateCanvasSlot const& slot)
 	{
 		return m_canvasUpdateSignal.connect(slot);
 	}
@@ -121,7 +124,8 @@ public:
 		CheckCombinations(id);
 		CheckTrash(id);
 		m_canvasUpdateSignal();
-		m_updateSignal();
+		m_updateSignal(m_newElementOpened);
+		m_newElementOpened.reset();
 	}
 
 	void CreateElement(ElType const type)
@@ -140,7 +144,7 @@ public:
 		std::ranges::sort(m_openElements, [&](const auto& a, const auto& b) {
 			return a.name < b.name;
 		});
-		m_updateSignal();
+		m_updateSignal(std::nullopt);
 	}
 
 private:
@@ -204,8 +208,10 @@ private:
 		{
 			return;
 		}
-		m_elements.at(type).open = true;
-		m_openElements.emplace_back(m_elements.at(type));
+		auto& model = m_elements.at(type);
+		m_newElementOpened = model.name;
+		model.open = true;
+		m_openElements.emplace_back(model);
 	}
 
 	std::vector<size_t> GetNearbyElementIds(size_t const targetId)
@@ -231,11 +237,12 @@ private:
 
 private:
 	UpdateSignal m_updateSignal;
-	UpdateSignal m_canvasUpdateSignal;
+	UpdateCanvasSignal m_canvasUpdateSignal;
 	std::map<ElType, ElementModel> m_elements{};
 	std::vector<ElementModel> m_openElements{};
 	std::map<size_t, CanvasElement> m_canvasElements{};
 	std::unordered_map<ElType, std::unordered_map<ElType, ElType>> m_combinations{};
 	Point m_trashPosition = { 270, 700 };
 	size_t m_id = 0;
+	std::optional<std::string> m_newElementOpened = std::nullopt;
 };

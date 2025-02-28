@@ -19,8 +19,9 @@ public:
 	{
 		RenderButtons();
 		RenderSortButton();
-		m_connection = m_model->DoOnUpdate([&] {
+		m_connection = m_model->DoOnUpdate([&](std::optional<std::string> newElement) {
 			RenderButtons();
+			ShowMessage(newElement);
 		});
 		m_canvasConnection = m_model->DoOnCanvasUpdate([&] {
 			Refresh();
@@ -109,6 +110,19 @@ private:
 	{
 		const auto pos = wxPoint(position.x, position.y);
 		dc.DrawText(text, pos);
+	}
+
+	void ShowMessage(std::optional<std::string> const& element)
+	{
+		if (!element.has_value())
+		{
+			return;
+		}
+		wxMessageDialog dialog(
+			this,
+			"You have discovered a new element called " + element.value(),
+			"New element discovered!");
+		dialog.ShowModal();
 	}
 
 private:
