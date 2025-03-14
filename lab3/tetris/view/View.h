@@ -150,11 +150,22 @@ private:
 
 	static Color GetColor(int tetrominoType)
 	{
-		return {
-			.r = 1.0f,
-			.g = 0.0f,
-			.b = 0.0f
-		};
+		if (tetrominoType == 1)
+			return { 1.0f, 0.0f, 0.0f };
+		if (tetrominoType == 2)
+			return { 0.0f, 1.0f, 0.0f };
+		if (tetrominoType == 3)
+			return { 0.0f, 0.0f, 1.0f };
+		if (tetrominoType == 4)
+			return { 1.0f, 1.0f, 0.0f };
+		if (tetrominoType == 5)
+			return { 0.0f, 1.0f, 1.0f };
+		if (tetrominoType == 6)
+			return { 1.0f, 0.0f, 1.0f };
+		if (tetrominoType == 7)
+			return { 1.0f, 1.0f, 1.0f };
+
+		return { 0.0f, 0.0f, 0.0f };
 	}
 
 private:

@@ -151,10 +151,11 @@ private:
 				}
 				m_field[0] = std::array<int, FIELD_WIDTH>{};
 				++fullLines;
+				++i;
 			}
 		}
 
-		m_score += static_cast<int>(std::pow(2, fullLines)) - 10;
+		m_score += static_cast<int>(std::pow(2, fullLines)) * 10 - 10;
 		m_linesLeft -= fullLines;
 		if (m_linesLeft <= 0)
 		{

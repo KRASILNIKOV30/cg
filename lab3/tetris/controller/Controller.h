@@ -12,11 +12,14 @@ class Controller final : public BaseWindow
 	using BaseWindow::BaseWindow;
 
 public:
-	Controller(Model& m, View& v)
+	Controller(Model& model, View& view)
 		: BaseWindow(800, 800, "tetris")
-		  , model(m)
-		  , view(v)
+		  , m_model(model)
+		  , m_view(view)
 	{
+		m_keyState[GLFW_KEY_LEFT] = false;
+		m_keyState[GLFW_KEY_RIGHT] = false;
+		m_keyState[GLFW_KEY_UP] = false;
 	}
 
 	void OnRunStart() override
@@ -31,45 +34,54 @@ public:
 
 		ProcessInput();
 
-		if (deltaTime >= model.GetUpdateTime())
+		if (deltaTime >= m_model.GetUpdateTime())
 		{
 			Update();
 		}
 
-		view.Render(width, height);
+		m_view.Render(width, height);
 		glfwPollEvents();
 	}
 
 private:
 	void Update()
 	{
-		model.Update();
+		m_model.Update();
 		m_lastUpdateTime = steady_clock::now();
 	}
 
-	void ProcessInput() const
+	void ProcessInput()
 	{
 		const auto window = GetWindow();
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		{
-			model.MoveLeft();
-		}
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		{
-			model.MoveRight();
-		}
+
+		CheckKeyPress(window, GLFW_KEY_LEFT, [&] { m_model.MoveLeft(); });
+		CheckKeyPress(window, GLFW_KEY_RIGHT, [&] { m_model.MoveRight(); });
+		CheckKeyPress(window, GLFW_KEY_UP, [&] { m_model.Rotate(); });
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
-			model.MoveDown();
+			m_model.MoveDown();
 		}
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	}
+
+	void CheckKeyPress(GLFWwindow* window, int key, std::function<void()> const& callback)
+	{
+		bool keyPressed = glfwGetKey(window, key) == GLFW_PRESS;
+		if (keyPressed && !m_keyState[key])
 		{
-			model.Rotate();
+			callback();
+			m_keyState[key] = true;
+		}
+		else if (!keyPressed)
+		{
+			m_keyState[key] = false;
 		}
 	}
 
 private:
-	Model& model;
-	View& view;
+	Model& m_model;
+	View& m_view;
 	steady_clock::time_point m_lastUpdateTime;
+
+	// Массив для хранения состояния клавиш
+	bool m_keyState[GLFW_KEY_LAST] = { false };
 };
