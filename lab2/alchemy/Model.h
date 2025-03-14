@@ -25,6 +25,9 @@ struct Size
 	int height;
 };
 
+// элемент в случайном порядке появляется
+
+// подобрать имена
 struct ElementModel
 {
 	ElType type;

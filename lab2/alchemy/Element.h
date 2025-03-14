@@ -39,7 +39,7 @@ struct Element
 	std::optional<std::pair<ElType, ElType>> combination = std::nullopt;
 };
 
-const std::vector<Element> elements = {
+inline const std::vector<Element> elements = {
 	{ ElType::FIRE, "Fire", "fire.jpg" },
 	{ ElType::WATER, "Water", "water.jpg" },
 	{ ElType::GROUND, "Ground", "ground.jpg" },
