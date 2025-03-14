@@ -5,8 +5,6 @@
 #include <chrono>
 #include <GLFW/glfw3.h>
 
-constexpr double UPDATE_TIME = 0.5;
-
 using namespace std::chrono;
 
 class Controller final : public BaseWindow
@@ -33,7 +31,7 @@ public:
 
 		ProcessInput();
 
-		if (deltaTime >= UPDATE_TIME)
+		if (deltaTime >= model.GetUpdateTime())
 		{
 			Update();
 		}

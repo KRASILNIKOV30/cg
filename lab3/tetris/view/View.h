@@ -1,5 +1,6 @@
 #pragma once
 #include "../model/Model.h"
+#include <GL/glut.h>
 
 struct Color
 {
@@ -22,7 +23,7 @@ class View
 {
 public:
 	explicit View(const Model& m)
-		: model(m)
+		: m_model(m)
 	{
 	}
 
@@ -38,7 +39,7 @@ public:
 		{
 			for (int x = 0; x < FIELD_WIDTH; ++x)
 			{
-				const auto block = model.GetBlock(x, y);
+				const auto block = m_model.GetBlock(x, y);
 				if (block)
 				{
 					const auto color = GetColor(block);
@@ -47,7 +48,7 @@ public:
 			}
 		}
 
-		DrawScore(model.GetScore());
+		DrawStats();
 	}
 
 	void DrawBorder()
@@ -96,8 +97,55 @@ private:
 		glEnd();
 	}
 
-	void DrawScore(int score)
+	void DrawStats()
 	{
+		glViewport(250, 200, 500, 350);
+		glColor3f(1.0f, 1.0f, 1.0f);
+
+		const auto score = "Score: " + std::to_string(m_model.GetScore());
+		const auto level = "Level: " + std::to_string(m_model.GetLevel());
+		const auto linesLeft = "Lines left: " + std::to_string(m_model.GetLinesLeft());
+		const auto next = "Next: ";
+
+		DrawText(score, 0.0f, 1.0f);
+		DrawText(level, 0.0f, 0.75f);
+		DrawText(linesLeft, 0.0f, 0.5f);
+		DrawText(next, 0.0f, 0.25f);
+
+		DrawNext();
+	}
+
+	void DrawNext()
+	{
+		const auto next = m_model.GetNextTetromino();
+		const auto size = next.size();
+		const auto viewportSize = BLOCK_SIZE * size;
+		glViewport(570, 350, viewportSize, viewportSize);
+
+		for (int y = 0; y < size; ++y)
+		{
+			for (int x = 0; x < size; ++x)
+			{
+				const auto block = next[y][x];
+				if (block)
+				{
+					const auto blockSide = 2.0f / size;
+					const auto posX = -1.0f + x * blockSide;
+					const auto posY = 1.0f - y * blockSide;
+					const auto color = GetColor(block);
+					DrawRectangle(posX, posY, blockSide, blockSide, color);
+				}
+			}
+		}
+	}
+
+	void DrawText(std::string const& text, GLfloat x, GLfloat y)
+	{
+		glRasterPos2f(x, y);
+		for (char c : text)
+		{
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+		}
 	}
 
 	static Color GetColor(int tetrominoType)
@@ -110,5 +158,5 @@ private:
 	}
 
 private:
-	const Model& model;
+	const Model& m_model;
 };

@@ -89,6 +89,26 @@ public:
 		}
 	}
 
+	[[nodiscard]] float GetUpdateTime() const
+	{
+		return m_updateTime;
+	}
+
+	[[nodiscard]] int GetLinesLeft() const
+	{
+		return m_linesLeft;
+	}
+
+	[[nodiscard]] int GetLevel() const
+	{
+		return m_level;
+	}
+
+	[[nodiscard]] Tetromino const& GetNextTetromino() const
+	{
+		return m_nextTetromino;
+	}
+
 private:
 	bool Move(int offsetX, int offsetY)
 	{
@@ -133,7 +153,29 @@ private:
 				++fullLines;
 			}
 		}
+
 		m_score += static_cast<int>(std::pow(2, fullLines)) - 10;
+		m_linesLeft -= fullLines;
+		if (m_linesLeft <= 0)
+		{
+			NextLevel();
+		}
+	}
+
+	void NextLevel()
+	{
+		m_score += GetEmptyLinesNumber() * 10;
+		m_level++;
+		m_updateTime *= 0.8;
+		m_linesLeft = m_level * 5;
+		m_field = {};
+	}
+
+	int GetEmptyLinesNumber()
+	{
+		return static_cast<int>(std::ranges::count_if(m_field, [](const auto& line) {
+			return std::ranges::all_of(line, [](const auto& elem) { return elem == 0; });
+		}));
 	}
 
 	void SpawnPiece()
@@ -172,4 +214,7 @@ private:
 	int m_score = 0;
 	bool isGameOver = false;
 	bool isPause = false;
+	float m_updateTime = 1.0;
+	int m_level = 1;
+	int m_linesLeft = 5;
 };

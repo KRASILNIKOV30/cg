@@ -3,8 +3,9 @@
 #include "view/View.h"
 #include "model/Model.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+	glutInit(&argc, argv);
 	GLFWInitializer initGLFW;
 	Model model{};
 	View view(model);

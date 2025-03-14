@@ -1,5 +1,6 @@
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
 
 add_executable(tetris
         tetris/main.cpp
@@ -11,4 +12,4 @@ add_executable(tetris
 )
 
 target_link_libraries(tetris glfw)
-target_link_libraries(tetris OpenGL)
+target_link_libraries(tetris OpenGL::GL GLUT::GLUT)
