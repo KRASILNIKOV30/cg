@@ -105,22 +105,28 @@ private:
 		const auto score = "Score: " + std::to_string(m_model.GetScore());
 		const auto level = "Level: " + std::to_string(m_model.GetLevel());
 		const auto linesLeft = "Lines left: " + std::to_string(m_model.GetLinesLeft());
-		const auto gameOver = m_model.IsGameOver() ? "Game over" : "";
 		const auto next = "Next: ";
+
+		const auto isGameOver = m_model.IsGameOver();
+		const auto gameOver = isGameOver ? "Game over" : "";
 
 		DrawText(score, 0.0f, 1.0f);
 		DrawText(level, 0.0f, 0.75f);
 		DrawText(linesLeft, 0.0f, 0.5f);
 		DrawText(next, 0.0f, 0.25f);
 		DrawText(gameOver, 0.0f, 0.0f);
-		DrawNext();
+
+		if (!isGameOver)
+		{
+			DrawNext();
+		}
 	}
 
-	void DrawNext()
+	void DrawNext() const
 	{
 		const auto next = m_model.GetNextTetromino();
 		const auto size = next.size();
-		const auto viewportSize = BLOCK_SIZE * size;
+		const auto viewportSize = static_cast<int>(BLOCK_SIZE * size);
 		glViewport(570, 350, viewportSize, viewportSize);
 
 		for (int y = 0; y < size; ++y)
@@ -130,9 +136,9 @@ private:
 				const auto block = next[y][x];
 				if (block)
 				{
-					const auto blockSide = 2.0f / size;
-					const auto posX = -1.0f + x * blockSide;
-					const auto posY = 1.0f - y * blockSide;
+					const auto blockSide = 2.0f / static_cast<float>(size);
+					const auto posX = -1.0f + static_cast<float>(x) * blockSide;
+					const auto posY = 1.0f - static_cast<float>(y) * blockSide;
 					const auto color = GetColor(block);
 					DrawRectangle(posX, posY, blockSide, blockSide, color);
 				}
@@ -140,7 +146,7 @@ private:
 		}
 	}
 
-	void DrawText(std::string const& text, GLfloat x, GLfloat y)
+	static void DrawText(std::string const& text, GLfloat x, GLfloat y)
 	{
 		glRasterPos2f(x, y);
 		for (char c : text)

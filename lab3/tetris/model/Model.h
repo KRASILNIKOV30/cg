@@ -1,6 +1,5 @@
 #pragma once
 #include "Tetromino.h"
-
 #include <array>
 #include <functional>
 #include <valarray>
@@ -167,7 +166,7 @@ private:
 	{
 		m_score += GetEmptyLinesNumber() * 10;
 		m_level++;
-		m_updateTime *= 0.8;
+		m_updateTime *= 0.5;
 		m_linesLeft = m_level * 5;
 		m_field = {};
 	}
