@@ -22,21 +22,21 @@ public:
 
 	void Update()
 	{
-		if (!MoveDown())
+		if (!m_isGameOver && !MoveDown())
 		{
 			LockPiece();
 			ClearLines();
 			SpawnPiece();
 			if (IsCollision(m_tetromino, 0, 1))
 			{
-				isGameOver = true;
+				m_isGameOver = true;
 			}
 		}
 	}
 
 	[[nodiscard]] bool IsGameOver() const
 	{
-		return isGameOver;
+		return m_isGameOver;
 	}
 
 	[[nodiscard]] int GetBlock(int x, int y) const
@@ -213,7 +213,7 @@ private:
 	Tetromino m_nextTetromino;
 	Point m_tetrominoPos{};
 	int m_score = 0;
-	bool isGameOver = false;
+	bool m_isGameOver = false;
 	bool isPause = false;
 	float m_updateTime = 1.0;
 	int m_level = 1;

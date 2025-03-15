@@ -105,13 +105,14 @@ private:
 		const auto score = "Score: " + std::to_string(m_model.GetScore());
 		const auto level = "Level: " + std::to_string(m_model.GetLevel());
 		const auto linesLeft = "Lines left: " + std::to_string(m_model.GetLinesLeft());
+		const auto gameOver = m_model.IsGameOver() ? "Game over" : "";
 		const auto next = "Next: ";
 
 		DrawText(score, 0.0f, 1.0f);
 		DrawText(level, 0.0f, 0.75f);
 		DrawText(linesLeft, 0.0f, 0.5f);
 		DrawText(next, 0.0f, 0.25f);
-
+		DrawText(gameOver, 0.0f, 0.0f);
 		DrawNext();
 	}
 
