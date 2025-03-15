@@ -59,6 +59,7 @@ private:
 		CheckKeyPress(window, GLFW_KEY_UP, [&] { m_model.Rotate(); });
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		{
+			// Сделать автоповтор для снижения фигуры
 			m_model.MoveDown();
 		}
 	}
@@ -81,7 +82,5 @@ private:
 	Model& m_model;
 	View& m_view;
 	steady_clock::time_point m_lastUpdateTime;
-
-	// Массив для хранения состояния клавиш
 	bool m_keyState[GLFW_KEY_LAST] = { false };
 };

@@ -4,6 +4,8 @@
 #include <functional>
 #include <valarray>
 #include <bits/ranges_algo.h>
+#include "../../../lib/signals/SignallingValue.h"
+
 
 constexpr int FIELD_WIDTH = 10;
 constexpr int FIELD_HEIGHT = 20;
@@ -13,21 +15,35 @@ class Model
 public:
 	using Field = std::array<std::array<int, FIELD_WIDTH>, FIELD_HEIGHT>;
 
+	using LineClearedSignal = EmptySignal;
+	using BlockFallenSignal = EmptySignal;
+	using NewLevelSignal = EmptySignal;
+	using GameOverSignal = EmptySignal;
+
+	using EmptySlot = EmptySignal::slot_type;
+
 	Model()
 	{
 		m_nextTetromino = GetRandomTetromino();
 		SpawnPiece();
 	}
 
+	[[nodiscard]] ScopedConnection DoOnLineCleared(EmptySlot const& slot) { return m_lineClearedSignal.connect(slot); }
+	[[nodiscard]] ScopedConnection DoOnBlockFallen(EmptySlot const& slot) { return m_blockFallenSignal.connect(slot); }
+	[[nodiscard]] ScopedConnection DoOnNewLevel(EmptySlot const& slot) { return m_newLevelSignal.connect(slot); }
+	[[nodiscard]] ScopedConnection DoOnGameOver(EmptySlot const& slot) { return m_gameOverSignal.connect(slot); }
+
 	void Update()
 	{
 		if (!m_isGameOver && !MoveDown())
 		{
+			m_blockFallenSignal();
 			LockPiece();
 			ClearLines();
 			SpawnPiece();
 			if (IsCollision(m_tetromino, 0, 1))
 			{
+				m_gameOverSignal();
 				m_isGameOver = true;
 			}
 		}
@@ -55,6 +71,7 @@ public:
 		return m_score;
 	}
 
+	// Не двигать после проигрыша
 	void MoveLeft()
 	{
 		Move(-1, 0);
@@ -111,6 +128,10 @@ public:
 private:
 	bool Move(int offsetX, int offsetY)
 	{
+		if (m_isGameOver)
+		{
+			return false;
+		}
 		const auto collision = IsCollision(m_tetromino, offsetX, offsetY);
 		if (!collision)
 		{
@@ -154,11 +175,15 @@ private:
 			}
 		}
 
-		m_score += static_cast<int>(std::pow(2, fullLines)) * 10 - 10;
-		m_linesLeft -= fullLines;
-		if (m_linesLeft <= 0)
+		if (fullLines > 0)
 		{
-			NextLevel();
+			m_lineClearedSignal();
+			m_score += static_cast<int>(std::pow(2, fullLines)) * 10 - 10;
+			m_linesLeft -= fullLines;
+			if (m_linesLeft <= 0)
+			{
+				NextLevel();
+			}
 		}
 	}
 
@@ -169,6 +194,7 @@ private:
 		m_updateTime *= 0.5;
 		m_linesLeft = m_level * 5;
 		m_field = {};
+		m_newLevelSignal();
 	}
 
 	int GetEmptyLinesNumber()
@@ -217,4 +243,9 @@ private:
 	float m_updateTime = 1.0;
 	int m_level = 1;
 	int m_linesLeft = 5;
+
+	LineClearedSignal m_lineClearedSignal;
+	BlockFallenSignal m_blockFallenSignal;
+	NewLevelSignal m_newLevelSignal;
+	GameOverSignal m_gameOverSignal;
 };

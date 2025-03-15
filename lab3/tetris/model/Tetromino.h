@@ -15,6 +15,7 @@ inline Tetromino GetRandomTetromino()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
+	// вынести в константы
 	std::uniform_int_distribution dis(1, 7);
 	int type = dis(gen);
 	if (type == 1) // L

@@ -2,6 +2,7 @@
 #include "controller/Controller.h"
 #include "view/View.h"
 #include "model/Model.h"
+#include "view/SoundView.h"
 
 int main(int argc, char* argv[])
 {
@@ -10,5 +11,6 @@ int main(int argc, char* argv[])
 	Model model{};
 	View view(model);
 	Controller controller(model, view);
+	SoundView soundView(model);
 	controller.Run();
 }
