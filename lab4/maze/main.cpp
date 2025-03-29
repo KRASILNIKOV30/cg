@@ -4,11 +4,18 @@
 #include <GL/glu.h>
 #include <glm/vec3.hpp>
 
-// Размеры лабиринта
-const int WIDTH = 16;
-const int HEIGHT = 16;
+constexpr int SCREEN_WIDTH = 1400;
+constexpr int SCREEN_HEIGHT = 900;
 
-// Текстуры стен (просто цвета для простоты)
+constexpr float NEAR = 0.1f;
+constexpr float FAR = 100.0f;
+
+constexpr float MOVE_SPEED = 0.05f;
+constexpr float ROT_SPEED = 0.03f;
+
+constexpr int WIDTH = 16;
+constexpr int HEIGHT = 16;
+
 struct Colors
 {
 	glm::vec3 floor = { 0.3f, 0.3f, 0.3f };
@@ -17,7 +24,6 @@ struct Colors
 	glm::vec3 wall2 = { 0.2f, 0.8f, 0.2f };
 } colors;
 
-// Лабиринт (1 - стена, 0 - проход)
 std::vector<std::vector<int>> maze = {
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 	{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
@@ -37,24 +43,18 @@ std::vector<std::vector<int>> maze = {
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 };
 
-// Позиция и направление игрока
-glm::vec3 playerPos = { 1.5f, 0.5f, 1.5f };
-float playerYaw = 0.0f; // Поворот вокруг Y
-const float moveSpeed = 0.05f;
-const float rotSpeed = 0.03f;
-
-void drawWall(float x1, float y1, float z1, float x2, float y2, float z2, glm::vec3 color)
+void DrawWall(const float x1, const float z1, const float x2, const float z2, const glm::vec3 color)
 {
 	glColor3f(color.r, color.g, color.b);
 	glBegin(GL_QUADS);
-	glVertex3f(x1, y1, z1);
-	glVertex3f(x2, y1, z2);
-	glVertex3f(x2, y2, z2);
-	glVertex3f(x1, y2, z1);
+	glVertex3f(x1, 0, z1);
+	glVertex3f(x1, 1, z1);
+	glVertex3f(x2, 1, z2);
+	glVertex3f(x2, 0, z2);
 	glEnd();
 }
 
-void drawFloor()
+void DrawFloor()
 {
 	glColor3f(colors.floor.r, colors.floor.g, colors.floor.b);
 	glBegin(GL_QUADS);
@@ -65,7 +65,7 @@ void drawFloor()
 	glEnd();
 }
 
-void drawCeiling()
+void DrawCeiling()
 {
 	glColor3f(colors.ceiling.r, colors.ceiling.g, colors.ceiling.b);
 	glBegin(GL_QUADS);
@@ -76,10 +76,10 @@ void drawCeiling()
 	glEnd();
 }
 
-void renderMaze()
+void RenderMaze()
 {
-	drawFloor();
-	drawCeiling();
+	DrawFloor();
+	DrawCeiling();
 
 	for (int x = 0; x < WIDTH; x++)
 	{
@@ -87,84 +87,89 @@ void renderMaze()
 		{
 			if (maze[x][z] == 1)
 			{
-				glm::vec3 color = (x + z) % 2 ? colors.wall1 : colors.wall2;
+				const glm::vec3 color = (x + z) % 2 ? colors.wall1 : colors.wall2;
 
-				// Проверяем соседей, чтобы не рисовать скрытые грани
-				if (x == 0 || maze[x - 1][z] == 0)
-					drawWall(x, 0, z, x, 1, z, color);
-				if (x == WIDTH - 1 || maze[x + 1][z] == 0)
-					drawWall(x + 1, 0, z, x + 1, 1, z, color);
-				if (z == 0 || maze[x][z - 1] == 0)
-					drawWall(x, 0, z, x + 1, 0, z, color);
-				if (z == HEIGHT - 1 || maze[x][z + 1] == 0)
-					drawWall(x, 0, z + 1, x + 1, 0, z + 1, color);
+				const auto xf = static_cast<float>(x);
+				const auto zf = static_cast<float>(z);
+
+				DrawWall(xf, zf, xf, zf + 1, color);
+				DrawWall(xf + 1, zf, xf + 1, zf + 1, color);
+				DrawWall(xf, zf, xf + 1, zf, color);
+				DrawWall(xf, zf + 1, xf + 1, zf + 1, color);
 			}
 		}
 	}
 }
 
-bool canMoveTo(float x, float z)
+bool CanMoveTo(float x, float z)
 {
-	int ix = static_cast<int>(x);
-	int iz = static_cast<int>(z);
+	const auto ix = static_cast<int>(x);
+	const auto iz = static_cast<int>(z);
 
 	if (ix < 0 || ix >= WIDTH || iz < 0 || iz >= HEIGHT)
+	{
 		return false;
+	}
 
 	return maze[ix][iz] == 0;
 }
 
-void processInput(GLFWwindow* window)
+void ProcessInput(GLFWwindow* window, glm::vec3& playerPos, float& playerYaw)
 {
-	// Вращение
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		playerYaw += rotSpeed;
+	{
+		playerYaw += ROT_SPEED;
+	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		playerYaw -= rotSpeed;
+	{
+		playerYaw -= ROT_SPEED;
+	}
 
-	// Движение
-	float moveX = 0.0f, moveZ = 0.0f;
+	float moveX = 0.0f;
+	float moveZ = 0.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		moveX = sinf(playerYaw) * moveSpeed;
-		moveZ = cosf(playerYaw) * moveSpeed;
+		moveX = sinf(playerYaw) * MOVE_SPEED;
+		moveZ = cosf(playerYaw) * MOVE_SPEED;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		moveX = -sinf(playerYaw) * moveSpeed;
-		moveZ = -cosf(playerYaw) * moveSpeed;
+		moveX = -sinf(playerYaw) * MOVE_SPEED;
+		moveZ = -cosf(playerYaw) * MOVE_SPEED;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		moveX = cosf(playerYaw) * moveSpeed;
-		moveZ = -sinf(playerYaw) * moveSpeed;
+		moveX = cosf(playerYaw) * MOVE_SPEED;
+		moveZ = -sinf(playerYaw) * MOVE_SPEED;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		moveX = -cosf(playerYaw) * moveSpeed;
-		moveZ = sinf(playerYaw) * moveSpeed;
+		moveX = -cosf(playerYaw) * MOVE_SPEED;
+		moveZ = sinf(playerYaw) * MOVE_SPEED;
 	}
 
-	// Проверка столкновений
-	if (canMoveTo(playerPos.x + moveX, playerPos.z))
+	if (CanMoveTo(playerPos.x + moveX, playerPos.z))
+	{
 		playerPos.x += moveX;
-	if (canMoveTo(playerPos.x, playerPos.z + moveZ))
+	}
+	if (CanMoveTo(playerPos.x, playerPos.z + moveZ))
+	{
 		playerPos.z += moveZ;
+	}
 }
 
-void setupCamera()
+void setupCamera(const glm::vec3 playerPos, const float playerYaw)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0, 800.0 / 600.0, 0.1, 100.0);
+	gluPerspective(60.0, static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), NEAR, FAR);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	// Позиция и направление камеры
-	float lookX = playerPos.x + sinf(playerYaw);
-	float lookZ = playerPos.z + cosf(playerYaw);
+	const auto lookX = playerPos.x + sinf(playerYaw);
+	const auto lookZ = playerPos.z + cosf(playerYaw);
 
 	gluLookAt(playerPos.x, playerPos.y, playerPos.z,
 		lookX, playerPos.y, lookZ,
@@ -173,10 +178,15 @@ void setupCamera()
 
 int main()
 {
-	if (!glfwInit())
-		return -1;
+	glm::vec3 playerPos = { 1.5f, 0.5f, 1.5f };
+	float playerYaw = 0.0f;
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "3D Maze", NULL, NULL);
+	if (!glfwInit())
+	{
+		return -1;
+	}
+
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "3D Maze", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -190,9 +200,9 @@ int main()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		processInput(window);
-		setupCamera();
-		renderMaze();
+		ProcessInput(window, playerPos, playerYaw);
+		setupCamera(playerPos, playerYaw);
+		RenderMaze();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
