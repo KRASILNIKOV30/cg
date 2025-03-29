@@ -12,6 +12,8 @@ add_executable(shape
         shape/Window.h
         shape/Cube.cpp
         shape/Cube.h
+        shape/GreatDodecahedron.cpp
+        shape/GreatDodecahedron.h
 )
 
 find_package(glfw3 REQUIRED)

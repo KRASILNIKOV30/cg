@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseWindow.h"
-#include "Cube.h"
+#include "GreatDodecahedron.h"
 
 class Window : public BaseWindow
 {
@@ -23,7 +23,7 @@ private:
 
 	void SetupCameraMatrix();
 
-	Cube m_cube;
+	GreatDodecahedron m_dodecahedron;
 	// Расстояние от камеры до точки вращения
 	static constexpr double DISTANCE_TO_ORIGIN = 2;
 

@@ -7,7 +7,7 @@ namespace
 // Угол обзора по вертикали
 constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
 // Размер стороны куба
-constexpr double CUBE_SIZE = 1;
+constexpr double SHAPE_SIZE = 1;
 
 constexpr double Z_NEAR = 0.1;
 constexpr double Z_FAR = 10;
@@ -30,25 +30,23 @@ glm::dmat4x4 Orthonormalize(const glm::dmat4x4& m)
 
 Window::Window(int w, int h, const char* title)
 	: BaseWindow(w, h, title)
-	  , m_cube(CUBE_SIZE)
+	  , m_dodecahedron(SHAPE_SIZE)
 {
-#if 1
-	m_cube.SetSideColor(CubeSide::NEGATIVE_X, { 1, 0, 0, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_X, { 0, 1, 0, 1 });
-	m_cube.SetSideColor(CubeSide::NEGATIVE_Y, { 0, 0, 1, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_Y, { 1, 1, 0, 1 });
-	m_cube.SetSideColor(CubeSide::NEGATIVE_Z, { 0, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_Z, { 1, 0, 1, 1 });
-#else
-	m_cube.SetSideColor(CubeSide::NEGATIVE_X, { 1, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_X, { 1, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::NEGATIVE_Y, { 1, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_Y, { 1, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::NEGATIVE_Z, { 1, 1, 1, 1 });
-	m_cube.SetSideColor(CubeSide::POSITIVE_Z, { 1, 1, 1, 1 });
-#endif
-	m_cube.SetSpecularColor({ 1, 1, 1, 1 });
-	m_cube.SetShininess(4.0f);
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_0, { 0, 0, 0, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_1, { 0, 0, 1, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_2, { 1, 0, 0, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_3, { 0, 1, 1, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_4, { 1, 1, 0, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_5, { 1, 0, 1, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_6, { 1, 1, 0, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_7, { 1, 1, 1, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_8, { 0, 0, 0.5, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_9, { 0, 0.5, 0, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_10, { 0, 0.5, 0.5, 1 });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_11, { 0.5, 0, 0, 1 });
+
+	m_dodecahedron.SetSpecularColor({ 1, 1, 1, 1 });
+	m_dodecahedron.SetShininess(4.0f);
 }
 
 void Window::OnMouseButton(int button, int action, int mods)
@@ -137,7 +135,7 @@ void Window::Draw(int width, int height)
 
 	SetupCameraMatrix();
 
-	m_cube.Draw();
+	m_dodecahedron.Draw();
 }
 
 void Window::SetupCameraMatrix()
