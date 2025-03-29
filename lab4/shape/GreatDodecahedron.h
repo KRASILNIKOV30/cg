@@ -21,7 +21,7 @@ public:
 private:
 	float m_size;
 	glm::vec4 m_faceColors[12]{};
-	glm::vec4 m_specularColor = { 0, 0, 0, 1 };
+	glm::vec4 m_specularColor = { 1, 1, 1, 1 };
 	float m_shininess = 1.0f;
 
 	void InitializeGeometry();

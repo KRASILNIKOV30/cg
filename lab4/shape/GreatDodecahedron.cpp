@@ -6,7 +6,7 @@
 GreatDodecahedron::GreatDodecahedron(float size)
 	: m_size(size)
 {
-	constexpr glm::vec4 defaultColor{ 1.0f, 0.5f, 0.0f, 1.0f };
+	constexpr glm::vec4 defaultColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 	for (auto& color : m_faceColors)
 	{
 		color = defaultColor;
@@ -16,16 +16,13 @@ GreatDodecahedron::GreatDodecahedron(float size)
 
 void GreatDodecahedron::InitializeGeometry()
 {
-	const float phi = (1.0f + std::sqrt(5.0f)) / 2.0f; // Золотое сечение
-
-	// 12 вершин икосаэдра
+	const float phi = (1.0f + std::sqrt(5.0f)) / 2.0f;
 	m_vertices = {
 		{ -1, phi, 0 }, { 1, phi, 0 }, { -1, -phi, 0 }, { 1, -phi, 0 },
 		{ 0, -1, phi }, { 0, 1, phi }, { 0, -1, -phi }, { 0, 1, -phi },
 		{ phi, 0, -1 }, { phi, 0, 1 }, { -phi, 0, -1 }, { -phi, 0, 1 }
 	};
 
-	// Нормализуем вершины к единичной сфере
 	for (auto& vertex : m_vertices)
 	{
 		vertex = glm::normalize(vertex);
@@ -43,22 +40,15 @@ void GreatDodecahedron::InitializeGeometry()
 
 void GreatDodecahedron::Draw() const
 {
-	// Настройки материала
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, glm::value_ptr(m_specularColor));
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_shininess);
-
-	// Включаем тест глубины
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
-
-	// Для каждой грани-пентаграммы
 	for (size_t faceIdx = 0; faceIdx < m_faces.size(); ++faceIdx)
 	{
 		const auto& face = m_faces[faceIdx];
-
-		// Вычисляем нормаль для всей грани
 		glm::vec3 normal(0.0f);
 		for (size_t i = 0; i < face.size(); ++i)
 		{
@@ -68,32 +58,25 @@ void GreatDodecahedron::Draw() const
 			normal += glm::cross(v1 - v0, v2 - v0);
 		}
 		normal = glm::normalize(normal);
-
-		// Рисуем пентаграмму как треугольный веер
 		glBegin(GL_TRIANGLE_FAN);
 		glNormal3fv(glm::value_ptr(normal));
 		glColor4fv(glm::value_ptr(m_faceColors[faceIdx]));
-
-		// Центр пентаграммы (не вершина, а средняя точка)
 		glm::vec3 center(0.0f);
-		for (unsigned vi : face)
+		for (const unsigned vi : face)
 		{
 			center += m_vertices[vi];
 		}
 		center /= face.size();
 		glVertex3fv(glm::value_ptr(center * m_size));
 
-		// Вершины пентаграммы
-		for (unsigned vi : face)
+		for (const unsigned vi : face)
 		{
 			glVertex3fv(glm::value_ptr(m_vertices[vi] * m_size));
 		}
-		// Замыкаем полигон
 		glVertex3fv(glm::value_ptr(m_vertices[face[0]] * m_size));
 		glEnd();
 	}
 
-	// Дополнительно рисуем контуры
 	glDisable(GL_LIGHTING);
 	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
