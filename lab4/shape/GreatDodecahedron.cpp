@@ -46,6 +46,20 @@ void GreatDodecahedron::Draw() const
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_shininess);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (const auto& face : m_faces)
+	{
+		glBegin(GL_LINE_LOOP);
+		for (unsigned vi : face)
+		{
+			glVertex3fv(glm::value_ptr(m_vertices[vi] * m_size));
+		}
+		glEnd();
+	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	for (size_t faceIdx = 0; faceIdx < m_faces.size(); ++faceIdx)
 	{
 		const auto& face = m_faces[faceIdx];
@@ -76,21 +90,6 @@ void GreatDodecahedron::Draw() const
 		glVertex3fv(glm::value_ptr(m_vertices[face[0]] * m_size));
 		glEnd();
 	}
-
-	glDisable(GL_LIGHTING);
-	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (const auto& face : m_faces)
-	{
-		glBegin(GL_LINE_LOOP);
-		for (unsigned vi : face)
-		{
-			glVertex3fv(glm::value_ptr(m_vertices[vi] * m_size));
-		}
-		glEnd();
-	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_LIGHTING);
 }
 
 void GreatDodecahedron::SetFaceColor(DodecahedronFace face, const glm::vec4& color)

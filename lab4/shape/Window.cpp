@@ -33,18 +33,18 @@ Window::Window(int w, int h, const char* title)
 	  , m_dodecahedron(SHAPE_SIZE)
 {
 #if 1
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_0, { 0.95f, 0.20f, 0.20f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_1, { 0.07f, 0.62f, 0.92f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_2, { 1.00f, 0.84f, 0.00f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_3, { 0.60f, 0.20f, 0.80f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_4, { 0.20f, 0.80f, 0.20f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_5, { 1.00f, 0.50f, 0.00f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_6, { 0.00f, 0.70f, 0.70f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_7, { 0.90f, 0.10f, 0.50f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_8, { 0.40f, 0.40f, 0.90f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_9, { 0.80f, 0.80f, 0.20f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_10, { 0.90f, 0.60f, 0.70f, 1.0f });
-	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_11, { 0.30f, 0.90f, 0.60f, 1.0f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_0, { 0.95f, 0.20f, 0.20f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_1, { 0.07f, 0.62f, 0.92f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_2, { 1.00f, 0.84f, 0.00f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_3, { 0.60f, 0.20f, 0.80f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_4, { 0.20f, 0.80f, 0.20f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_5, { 1.00f, 0.50f, 0.00f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_6, { 0.00f, 0.70f, 0.70f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_7, { 0.90f, 0.10f, 0.50f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_8, { 0.40f, 0.40f, 0.90f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_9, { 0.80f, 0.80f, 0.20f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_10, { 0.90f, 0.60f, 0.70f, 0.6f });
+	m_dodecahedron.SetFaceColor(DodecahedronFace::FACE_11, { 0.30f, 0.90f, 0.60f, 0.6f });
 #endif
 
 	m_dodecahedron.SetSpecularColor({ 1, 1, 1, 1 });
