@@ -1,6 +1,13 @@
 #pragma once
-#include "Mesh.h"
 #include <GL/gl.h>
+#include <glm/ext.hpp>
+
+struct Vertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::u8vec4 color;
+};
 
 class Surface
 {
@@ -10,7 +17,6 @@ public:
 	virtual ~Surface();
 
 protected:
-	// Метод вычисления параметров вершины в точке (x, y)
 	virtual Vertex CalculateVertex(double x, double y) const;
 
 private:

@@ -7,8 +7,8 @@ namespace
 // Угол обзора по вертикали
 constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
 
-constexpr double Z_NEAR = 2;
-constexpr double Z_FAR = 30;
+constexpr double Z_NEAR = 0.1;
+constexpr double Z_FAR = 10;
 
 // Ортонормируем матрицу 4*4 (это должна быть аффинная матрица)
 glm::dmat4x4 Orthonormalize(const glm::dmat4x4& m)
@@ -88,10 +88,6 @@ void Window::OnResize(int width, int height)
 
 void Window::OnRunStart()
 {
-	// Включаем режим отбраковки граней
-	glEnable(GL_CULL_FACE);
-	// Отбраковываться будут нелицевые стороны граней
-	glCullFace(GL_BACK);
 	// Сторона примитива считается лицевой, если при ее рисовании
 	// обход верших осуществляется против часовой стрелки
 	glFrontFace(GL_CCW);

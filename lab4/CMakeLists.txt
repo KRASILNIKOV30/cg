@@ -26,16 +26,15 @@ add_executable(mesh
         mesh/BaseWindow.h
         mesh/GLFWInitializer.cpp
         mesh/GLFWInitializer.h
-        mesh/Mesh.cpp
-        mesh/Mesh.h
+        
         mesh/Window.cpp
         mesh/Window.h
         mesh/Surface.cpp
         mesh/Surface.h
         mesh/Frame.cpp
         mesh/Frame.h
-        mesh/SincSurface.cpp
-        mesh/SincSurface.h
+        mesh/MobiusStrip.cpp
+        mesh/MobiusStrip.h
 )
 
 find_package(glfw3 REQUIRED)
