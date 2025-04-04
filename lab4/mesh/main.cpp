@@ -4,6 +4,6 @@
 int main()
 {
 	GLFWInitializer initGLFW;
-	Window window{ 800, 600, "3D Cube" };
+	Window window{ 800, 600, "Mobius strip" };
 	window.Run();
 }
