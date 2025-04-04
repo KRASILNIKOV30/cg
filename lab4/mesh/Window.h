@@ -26,12 +26,12 @@ private:
 	static void SetupLightsAndMaterial();
 
 	Frame m_frame;
-	MobiusStrip m_surface = { 40, 20, 0.0, 2 * M_PI, -1, 1 };
+	MobiusStrip m_surface = { 200, 400, 0.0, 2 * M_PI, -1, 1 };
 
 	bool m_leftButtonPressed = false;
 	glm::dvec2 m_mousePos = {};
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
-		glm::dvec3{ 2.0, 2.0, 2.0 },
+		glm::dvec3{ 1.7, 1.7, 1.7 },
 		glm::dvec3{ 0.0, 0.0, 0.0 },
 		glm::dvec3{ 0.0, 0.0, 1.0 });
 };

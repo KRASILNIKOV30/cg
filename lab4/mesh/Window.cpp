@@ -110,8 +110,8 @@ void Window::Draw(int width, int height)
 	SetupCameraMatrix();
 	SetupLightsAndMaterial();
 
-	glLineWidth(3);
-	m_frame.Draw();
+	// glLineWidth(3);
+	// m_frame.Draw();
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glLineWidth(1);
 	m_surface.Draw();
@@ -138,7 +138,7 @@ void Window::SetupLightsAndMaterial()
 	// Задаем параметры материала
 	Material material;
 	material.SetDiffuse(0.8f, 0.8f, 0.f);
-	material.SetSpecular(0.3f, 0.3f, 0.3f);
+	material.SetSpecular(0.7f, 0.7f, 0.7f);
 	material.SetShininess(50);
 	material.Activate(GL_FRONT_AND_BACK);
 }
