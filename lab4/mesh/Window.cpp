@@ -6,11 +6,9 @@ namespace
 {
 // Угол обзора по вертикали
 constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
-// Размер стороны куба
-constexpr double CUBE_SIZE = 1;
 
-constexpr double Z_NEAR = 0.1;
-constexpr double Z_FAR = 10;
+constexpr double Z_NEAR = 2;
+constexpr double Z_FAR = 30;
 
 // Ортонормируем матрицу 4*4 (это должна быть аффинная матрица)
 glm::dmat4x4 Orthonormalize(const glm::dmat4x4& m)

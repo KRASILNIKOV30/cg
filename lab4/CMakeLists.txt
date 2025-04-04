@@ -34,6 +34,8 @@ add_executable(mesh
         mesh/Surface.h
         mesh/Frame.cpp
         mesh/Frame.h
+        mesh/SincSurface.cpp
+        mesh/SincSurface.h
 )
 
 find_package(glfw3 REQUIRED)

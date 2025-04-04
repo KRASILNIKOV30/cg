@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseWindow.h"
 #include "Frame.h"
+#include "SincSurface.h"
 #include "Surface.h"
 
 class Window : public BaseWindow
@@ -24,13 +25,13 @@ private:
 
 	void SetupCameraMatrix();
 
-	Frame m_frame;
-	Surface m_surface = { 100, 100, -10, 10, -10, 10 };
+	Frame m_frame{ 5 };
+	SincSurface m_surface = { 100, 100, -10, 10, -10, 10 };
 
 	bool m_leftButtonPressed = false;
 	glm::dvec2 m_mousePos = {};
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
-		glm::dvec3{ 1.0, 1.0, 2.0 },
+		glm::dvec3{ 8.0, 8.0, 12.0 },
 		glm::dvec3{ 0.0, 0.0, 0.0 },
 		glm::dvec3{ 0.0, 0.0, 1.0 });
 };
