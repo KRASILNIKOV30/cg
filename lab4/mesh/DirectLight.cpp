@@ -1,5 +1,5 @@
-#include "pch.h"
 #include "DirectLight.h"
+#include <glm/gtc/type_ptr.hpp>
 
 DirectLight::DirectLight(glm::vec3 direction)
 	: m_direction{ direction, 0.0f }

@@ -1,5 +1,8 @@
 #include "Window.h"
 
+#include "DirectLight.h"
+#include "Material.h"
+
 #include <glm/gtx/orthonormalize.hpp>
 
 namespace
@@ -105,10 +108,11 @@ void Window::Draw(int width, int height)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	SetupCameraMatrix();
+	SetupLightsAndMaterial();
 
 	glLineWidth(3);
 	m_frame.Draw();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT, GL_FILL);
 	glLineWidth(1);
 	m_surface.Draw();
 }
@@ -117,4 +121,23 @@ void Window::SetupCameraMatrix()
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixd(&m_cameraMatrix[0][0]);
+}
+
+void Window::SetupLightsAndMaterial()
+{
+	// Включаем освещение и источник света №0
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	// Задаем параметры направленного источника света
+	DirectLight light({ 2, 2, 2 });
+	light.SetSpecularIntensity({ 1, 1, 1, 1 });
+	light.SetDiffuseIntensity({ 1, 1, 1, 1 });
+
+	// Задаем параметры материала
+	Material material;
+	material.SetDiffuse(0.8f, 0.8f, 0.f);
+	material.SetSpecular(0.3f, 0.3f, 0.3f);
+	material.SetShininess(50);
+	material.Activate();
 }

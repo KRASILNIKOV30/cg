@@ -23,6 +23,8 @@ private:
 
 	void SetupCameraMatrix();
 
+	static void SetupLightsAndMaterial();
+
 	Frame m_frame;
 	MobiusStrip m_surface = { 40, 20, 0.0, 2 * M_PI, -1, 1 };
 

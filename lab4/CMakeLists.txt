@@ -6,8 +6,8 @@ add_executable(shape
         shape/pch.h
         shape/GLFWInitializer.cpp
         shape/GLFWInitializer.h
-        shape/DirectLight.cpp
-        shape/DirectLight.h
+        mesh/DirectLight.cpp
+        mesh/DirectLight.h
         shape/Window.cpp
         shape/Window.h
         shape/Cube.cpp
@@ -26,7 +26,7 @@ add_executable(mesh
         mesh/BaseWindow.h
         mesh/GLFWInitializer.cpp
         mesh/GLFWInitializer.h
-        
+
         mesh/Window.cpp
         mesh/Window.h
         mesh/Surface.cpp
@@ -35,6 +35,11 @@ add_executable(mesh
         mesh/Frame.h
         mesh/MobiusStrip.cpp
         mesh/MobiusStrip.h
+        mesh/Material.h
+        mesh/Material.cpp
+        mesh/Material.h
+        mesh/DirectLight.h
+        mesh/DirectLight.cpp
 )
 
 find_package(glfw3 REQUIRED)

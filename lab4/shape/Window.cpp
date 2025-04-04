@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Window.h"
-#include "DirectLight.h"
+#include "../mesh/DirectLight.h"
 
 namespace
 {
