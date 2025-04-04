@@ -87,6 +87,7 @@ void RenderMaze()
 		{
 			if (maze[x][z] == 1)
 			{
+				// разный цвет в зависимости от типа кубика
 				const glm::vec3 color = (x + z) % 2 ? colors.wall1 : colors.wall2;
 
 				const auto xf = static_cast<float>(x);
