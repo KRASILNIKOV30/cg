@@ -8,7 +8,7 @@ Frame::Frame(float size, float endSize)
 {
 }
 
-void Frame::Draw(void) const
+void Frame::Draw() const
 {
 	float arrowOffset = m_size * m_endSize;
 	float arrowOffset2 = arrowOffset * 0.5f;

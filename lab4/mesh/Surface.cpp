@@ -14,7 +14,6 @@ Surface::Surface(int columns, int rows, float xMin, float xMax, float yMin, floa
 void Surface::Draw() const
 {
 	glPolygonMode(GL_LINE_SMOOTH, GL_LINE);
-	glColor3ub(255, 255, 0);
 	// При первом обращении к данной функции запишем команды
 	// рисования поверхности в дисплейный список
 	if (m_displayList == 0)

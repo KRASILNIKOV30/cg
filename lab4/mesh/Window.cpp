@@ -128,6 +128,7 @@ void Window::SetupLightsAndMaterial()
 	// Включаем освещение и источник света №0
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	// Задаем параметры направленного источника света
 	DirectLight light({ 2, 2, 2 });
@@ -139,5 +140,5 @@ void Window::SetupLightsAndMaterial()
 	material.SetDiffuse(0.8f, 0.8f, 0.f);
 	material.SetSpecular(0.3f, 0.3f, 0.3f);
 	material.SetShininess(50);
-	material.Activate();
+	material.Activate(GL_FRONT_AND_BACK);
 }
