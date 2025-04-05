@@ -1,7 +1,10 @@
 #include "./TextureLoader.h"
+
+#include <iostream>
 #include <SOIL/SOIL.h>
 #include <stdexcept>
 #include <GL/glu.h>
+#include <GLFW/glfw3.h>
 
 TextureLoader::TextureLoader()
 	: m_buildMipmaps(true),
@@ -14,6 +17,11 @@ TextureLoader::TextureLoader()
 
 GLuint TextureLoader::LoadTexture2D(std::string const& fileName, GLuint textureName, GLint level) const
 {
+	if (!glfwGetCurrentContext())
+	{
+		throw std::runtime_error("OpenGL context is not created!");
+	}
+
 	// Загрузка изображения с помощью SOIL
 	int width, height, channels;
 	unsigned char* image = SOIL_load_image(
@@ -47,11 +55,25 @@ GLuint TextureLoader::LoadTexture2D(std::string const& fileName, GLuint textureN
 		throw std::runtime_error("Unsupported texture format");
 	}
 
-	// Создание или использование существующей текстуры
 	GLuint texture = textureName;
 	if (texture == 0)
 	{
 		glGenTextures(1, &texture);
+		if (texture == 0)
+		{
+			SOIL_free_image_data(image);
+			throw std::runtime_error("Failed to generate OpenGL texture!");
+		}
+		GLenum err = glGetError();
+		if (err != GL_NO_ERROR)
+		{
+			std::cout << "OpenGL error after glGenTextures: " << gluErrorString(err) << std::endl;
+		}
+
+		if (texture == 0)
+		{
+			std::cout << "glGenTextures failed to generate a texture!" << std::endl;
+		}
 	}
 
 	glBindTexture(GL_TEXTURE_2D, texture);

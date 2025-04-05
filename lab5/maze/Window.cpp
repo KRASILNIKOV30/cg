@@ -2,6 +2,7 @@
 
 #include <GL/glu.h>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/log_base.hpp>
 #include <glm/gtx/orthonormalize.hpp>
 
 namespace
@@ -10,7 +11,7 @@ namespace
 constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
 
 constexpr double Z_NEAR = 0.1;
-constexpr double Z_FAR = 10;
+constexpr double Z_FAR = 20;
 
 constexpr float MOVE_SPEED = 0.05f;
 constexpr float ROT_SPEED = 0.03f;
@@ -51,16 +52,12 @@ void Window::OnResize(int width, int height)
 
 void Window::OnRunStart()
 {
-	// Сторона примитива считается лицевой, если при ее рисовании
-	// обход верших осуществляется против часовой стрелки
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 	glFrontFace(GL_CCW);
 
-	// Включаем тест глубины для удаления невидимых линий и поверхностей
 	glEnable(GL_DEPTH_TEST);
-	// Задаем ширину линий
 
-	// И цвет очистки буфера цвета
 	glClearColor(0, 0, 0, 1);
 }
 
@@ -109,11 +106,12 @@ void Window::ProcessInput()
 		moveZ = sinf(m_playerYaw) * MOVE_SPEED;
 	}
 
-	if (m_maze.CanMoveTo(m_playerPos.x + moveX, m_playerPos.z))
+	constexpr float delta = 1.5 * Z_NEAR;
+	if (m_maze.CanMoveTo(m_playerPos.x + moveX + delta * glm::sign(moveX), m_playerPos.z))
 	{
 		m_playerPos.x += moveX;
 	}
-	if (m_maze.CanMoveTo(m_playerPos.x, m_playerPos.z + moveZ))
+	if (m_maze.CanMoveTo(m_playerPos.x, m_playerPos.z + moveZ + delta * glm::sign(moveZ)))
 	{
 		m_playerPos.z += moveZ;
 	}

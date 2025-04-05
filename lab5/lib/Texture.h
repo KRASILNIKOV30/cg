@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <cassert>
 
-class CBaseTexture
+class BaseTexture
 {
 public:
 	// Генерируем имя для текстурного объекта
@@ -15,9 +15,11 @@ public:
 	// Удаляем текстурный объект
 	void Delete()
 	{
-		assert(m_texture);
-		glDeleteTextures(1, &m_texture);
-		m_texture = 0;
+		if (m_texture)
+		{
+			glDeleteTextures(1, &m_texture);
+			m_texture = 0;
+		}
 	}
 
 	// Отвязываемся от текстурного объекта и возвращаем его идентификатор
@@ -29,7 +31,7 @@ public:
 	}
 
 	// Получаем идентификатор текстурного объекта
-	explicit operator GLuint() const
+	operator GLuint() const
 	{
 		return m_texture;
 	}
@@ -41,13 +43,13 @@ public:
 		glBindTexture(target, m_texture);
 	}
 
-	CBaseTexture(CBaseTexture const&) = delete;
-	CBaseTexture& operator=(CBaseTexture const&) = delete;
+	BaseTexture(BaseTexture const&) = delete;
+	BaseTexture& operator=(BaseTexture const&) = delete;
 
-	virtual ~CBaseTexture() = default;
+	virtual ~BaseTexture() = default;
 
 protected:
-	explicit CBaseTexture(GLuint texture)
+	explicit BaseTexture(GLuint texture)
 		: m_texture(texture)
 	{
 	}
@@ -61,18 +63,18 @@ private:
 	GLuint m_texture;
 };
 
-template <bool t_managed, class TBase> class CTextureImpl : public TBase
+template <bool t_managed, class TBase> class TextureImpl : public TBase
 {
 public:
-	explicit CTextureImpl(GLuint texture = 0)
+	explicit TextureImpl(GLuint texture = 0)
 		: TBase(texture)
 	{
 	}
 
-	~CTextureImpl()
+	~TextureImpl()
 	{
 		bool m = t_managed;
-		if (m && (*this != 0))
+		if (m)
 		{
 			TBase::Delete();
 		}
@@ -81,7 +83,7 @@ public:
 	// Присоединяем текстурный объект
 	void Attach(GLuint texture)
 	{
-		if (t_managed && (*this != 0) && (texture != *this))
+		if (t_managed && texture && texture != *this)
 		{
 			TBase::Delete();
 		}
@@ -89,11 +91,11 @@ public:
 	}
 };
 
-class CTexture2DImpl final : public CBaseTexture
+class Texture2DImpl : public BaseTexture
 {
 public:
-	explicit CTexture2DImpl(GLuint texture = 0)
-		: CBaseTexture(texture)
+	explicit Texture2DImpl(GLuint texture = 0)
+		: BaseTexture(texture)
 	{
 	}
 
@@ -108,15 +110,15 @@ public:
 	}
 };
 
-class CTexture1DImpl final : public CBaseTexture
+class Texture1DImpl : public BaseTexture
 {
 public:
-	explicit CTexture1DImpl(GLuint texture = 0)
-		: CBaseTexture(texture)
+	explicit Texture1DImpl(GLuint texture = 0)
+		: BaseTexture(texture)
 	{
 	}
 
-	virtual void Bind() const
+	void Bind() const
 	{
 		BindTo(GL_TEXTURE_1D);
 	}
@@ -127,11 +129,11 @@ public:
 	}
 };
 
-typedef CTextureImpl<true, CBaseTexture> CTexture;
-typedef CTextureImpl<false, CBaseTexture> CTextureHandle;
+typedef TextureImpl<true, BaseTexture> Texture;
+typedef TextureImpl<false, BaseTexture> TextureHandle;
 
-typedef CTextureImpl<true, CTexture2DImpl> CTexture2D;
-typedef CTextureImpl<false, CTexture2DImpl> CTexture2DHandle;
+typedef TextureImpl<true, Texture2DImpl> Texture2D;
+typedef TextureImpl<false, Texture2DImpl> Texture2DHandle;
 
-typedef CTextureImpl<true, CTexture1DImpl> CTexture1D;
-typedef CTextureImpl<false, CTexture1DImpl> CTexture1DHandle;
+typedef TextureImpl<true, Texture1DImpl> Texture1D;
+typedef TextureImpl<false, Texture1DImpl> Texture1DHandle;
