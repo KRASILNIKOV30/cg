@@ -69,6 +69,8 @@ void Window::Draw(int width, int height)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	SetupCamera();
+	ProcessInput();
+
 	m_maze.Draw();
 }
 
