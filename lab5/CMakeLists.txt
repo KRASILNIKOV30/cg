@@ -1,8 +1,8 @@
 set(SOIL_SOURCES
-        lib/SOIL/src/SOIL.c
-        lib/SOIL/src/image_DXT.c
-        lib/SOIL/src/image_helper.c
-        lib/SOIL/src/stb_image_aug.c
+        lib/SOIL/SOIL.c
+        lib/SOIL/image_DXT.c
+        lib/SOIL/image_helper.c
+        lib/SOIL/stb_image_aug.c
 )
 
 add_executable(maze-with-textures
