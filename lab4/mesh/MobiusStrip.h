@@ -1,8 +1,7 @@
 #pragma once
 #include "Surface.h"
-#include <cmath>
 
-class MobiusStrip : public Surface
+class MobiusStrip final : public Surface
 {
 public:
 	MobiusStrip(int columns, int rows, float uMin, float uMax, float vMin, float vMax);
@@ -18,5 +17,5 @@ private:
 		double& dy_du, double& dy_dv,
 		double& dz_du, double& dz_dv) const;
 
-	const double epsilon = 1e-6; // Для численного дифференцирования
+	const double epsilon = 1e-6;
 };
