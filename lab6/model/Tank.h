@@ -24,12 +24,10 @@ public:
 	using HealthChangedSignal = EmptySignal;
 	using FiredSignal = EmptySignal;
 
-	TankModel(TankType type, const Point& initialPosition, TankRotation initialRotation, int health)
+	TankModel(TankType type, const Point& initialPosition, TankRotation initialRotation)
 		: m_type(type),
 		  m_position(initialPosition),
 		  m_rotation(initialRotation),
-		  m_health(health),
-		  m_maxHealth(health),
 		  m_fireRate(30)
 	{
 	}
@@ -158,8 +156,8 @@ private:
 	TankType m_type;
 	Point m_position;
 	TankRotation m_rotation;
-	int m_health;
-	int m_maxHealth;
+	int m_health = 1;
+	int m_maxHealth = 1;
 	int m_speed = 2;
 	int m_fireCooldown = 0;
 	int m_fireRate;

@@ -2,6 +2,8 @@
 #include "../../lib/glfwWindow/BaseWindow.h"
 #include "lab6/3d/model/Model.h"
 #include "lab6/3d/model/ModelRenderer.h"
+#include "lab6/3d/render/TankRenderer.h"
+#include "lab6/model/Tank.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -20,8 +22,9 @@ private:
 	void SetupCamera() const;
 
 private:
-	Model m_model;
-	ModelRenderer m_renderer;
+	TankRenderer m_tankRenderer;
+	TankModel m_tank{ TankType::PLAYER, { 0, 0 }, TankRotation::UP };
+
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
 		glm::dvec3{ 1.7, 1.7, 1.7 },
 		glm::dvec3{ 0.0, 0.0, 0.0 },

@@ -53,23 +53,14 @@ void Window::OnRunStart()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(1, 1, 1, 1);
 
-	const ModelLoader loader;
-	loader.LoadObjFile("res/model.obj", m_model);
-
-	auto const& modelBB = m_model.GetBoundingBox();
-
-	if (modelBB.IsEmpty())
-	{
-		throw std::runtime_error("Model is empty");
-	}
-
-	auto const& modelCenter = modelBB.GetCenter();
-	const auto modelDiagonal = modelBB.GetSize().GetLength();
-	const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal / 2, modelDiagonal);
+	// auto const& modelBB = m_model.GetBoundingBox();
+	// auto const& modelCenter = modelBB.GetCenter();
+	// const auto modelDiagonal = modelBB.GetSize().GetLength();
+	// const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal / 2, modelDiagonal);
 	glLoadIdentity();
 	gluLookAt(
-		cameraPosition.x, cameraPosition.y, cameraPosition.z,
-		modelCenter.x, modelCenter.y, modelCenter.z,
+		10, 10, 10,
+		0, 0, 0,
 		0, 1, 0);
 
 }
@@ -83,9 +74,7 @@ void Window::Draw(int width, int height)
 	SetupCamera();
 	ProcessInput();
 
-	// glColor3f(0.0, 0.0, 1.0);
-
-	ModelRenderer::RenderModel(m_model);
+	m_tankRenderer.Render(m_tank);
 }
 
 void Window::ProcessInput()
