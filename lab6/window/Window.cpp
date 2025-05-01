@@ -77,6 +77,8 @@ void Window::OnRunStart()
 void Window::Draw(int width, int height)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
 	SetupCamera();
 	ProcessInput();
