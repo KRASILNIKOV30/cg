@@ -92,13 +92,13 @@ public:
 		switch (m_rotation)
 		{
 		case TankRotation::UP:
-			m_position.y -= m_speed;
+			m_position.y += m_speed;
 			break;
 		case TankRotation::RIGHT:
 			m_position.x += m_speed;
 			break;
 		case TankRotation::DOWN:
-			m_position.y += m_speed;
+			m_position.y -= m_speed;
 			break;
 		case TankRotation::LEFT:
 			m_position.x -= m_speed;
@@ -158,7 +158,7 @@ private:
 	TankRotation m_rotation;
 	int m_health = 1;
 	int m_maxHealth = 1;
-	int m_speed = 2;
+	float m_speed = 0.1;
 	int m_fireCooldown = 0;
 	int m_fireRate;
 

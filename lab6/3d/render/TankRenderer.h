@@ -14,6 +14,7 @@ public:
 			Load();
 		}
 
+		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 
 		const auto [x, y] = tank.GetPosition();

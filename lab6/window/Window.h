@@ -20,10 +20,12 @@ private:
 
 	void ProcessInput();
 	void SetupCamera() const;
+	void CheckKeyPress(int key, std::function<void()> const& callback);
 
 private:
 	TankRenderer m_tankRenderer;
 	TankModel m_tank{ TankType::PLAYER, { 0, 0 }, TankRotation::UP };
+	bool m_keyState[GLFW_KEY_LAST] = { false };
 
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
 		glm::dvec3{ 1.7, 1.7, 1.7 },

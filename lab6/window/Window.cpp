@@ -79,7 +79,16 @@ void Window::Draw(int width, int height)
 
 void Window::ProcessInput()
 {
-
+	CheckKeyPress(GLFW_KEY_LEFT, [&] {
+		m_tank.Rotate(true);
+	});
+	CheckKeyPress(GLFW_KEY_RIGHT, [&] {
+		m_tank.Rotate(false);
+	});
+	if (IsKeyPressed(GLFW_KEY_UP))
+	{
+		m_tank.MoveForward();
+	}
 }
 
 void Window::SetupCamera() const
@@ -88,4 +97,18 @@ void Window::SetupCamera() const
 	glLoadIdentity();
 	const auto screenSize = GetFramebufferSize();
 	gluPerspective(60.0, static_cast<float>(screenSize[0]) / static_cast<float>(screenSize[1]), Z_NEAR, Z_FAR);
+}
+
+void Window::CheckKeyPress(int key, std::function<void()> const& callback)
+{
+	const auto keyPressed = IsKeyPressed(key);
+	if (keyPressed && !m_keyState[key])
+	{
+		callback();
+		m_keyState[key] = true;
+	}
+	else if (!keyPressed)
+	{
+		m_keyState[key] = false;
+	}
 }
