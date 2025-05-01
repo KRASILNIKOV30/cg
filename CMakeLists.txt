@@ -8,6 +8,9 @@ enable_testing()
 add_library(catch2 INTERFACE
         lab4/shape/main.cpp)
 add_library(signals INTERFACE)
+add_library(tinyobjloader lib/tinyobjloader/tiny_obj_loader.cc)
+
+target_include_directories(tinyobjloader PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(
         catch2 INTERFACE lib/catch2
 )
@@ -20,3 +23,4 @@ add_subdirectory(lab2)
 add_subdirectory(lab3)
 add_subdirectory(lab4)
 add_subdirectory(lab5)
+add_subdirectory(lab6)
