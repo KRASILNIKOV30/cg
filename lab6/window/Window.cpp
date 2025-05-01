@@ -54,7 +54,7 @@ void Window::OnRunStart()
 	glClearColor(1, 1, 1, 1);
 
 	const ModelLoader loader;
-	loader.LoadObjFile("res/tinker.obj", m_model);
+	loader.LoadObjFile("res/model.obj", m_model);
 
 	auto const& modelBB = m_model.GetBoundingBox();
 
@@ -65,12 +65,12 @@ void Window::OnRunStart()
 
 	auto const& modelCenter = modelBB.GetCenter();
 	const auto modelDiagonal = modelBB.GetSize().GetLength();
-	const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal, modelDiagonal / 2);
+	const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal / 2, modelDiagonal);
 	glLoadIdentity();
 	gluLookAt(
 		cameraPosition.x, cameraPosition.y, cameraPosition.z,
 		modelCenter.x, modelCenter.y, modelCenter.z,
-		0, 0, 1);
+		0, 1, 0);
 
 }
 
@@ -81,7 +81,7 @@ void Window::Draw(int width, int height)
 	SetupCamera();
 	ProcessInput();
 
-	glColor3f(0.0, 0.0, 1.0);
+	// glColor3f(0.0, 0.0, 1.0);
 
 	ModelRenderer::RenderModel(m_model);
 }
