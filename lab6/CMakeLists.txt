@@ -57,6 +57,7 @@ add_executable(battle-city
         window/Window.cpp
         3d/render/TankRenderer.h
         3d/render/TankRenderer.h
+        3d/render/FieldRenderer.h
 )
 
 

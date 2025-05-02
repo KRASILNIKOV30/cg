@@ -2,6 +2,7 @@
 #include "../../lib/glfwWindow/BaseWindow.h"
 #include "lab6/3d/model/Model.h"
 #include "lab6/3d/model/ModelRenderer.h"
+#include "lab6/3d/render/FieldRenderer.h"
 #include "lab6/3d/render/TankRenderer.h"
 #include "lab6/model/Tank.h"
 
@@ -24,6 +25,8 @@ private:
 
 private:
 	TankRenderer m_tankRenderer;
+	FieldRenderer m_fieldRenderer;
+	Field m_field;
 	TankModel m_tank{ TankType::PLAYER, { 0, 0 }, TankRotation::UP };
 	bool m_keyState[GLFW_KEY_LAST] = { false };
 

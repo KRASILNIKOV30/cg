@@ -59,7 +59,7 @@ void Window::OnRunStart()
 	// const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal / 2, modelDiagonal);
 	glLoadIdentity();
 	gluLookAt(
-		10, 10, 10,
+		2, 2, 2,
 		0, 0, 0,
 		0, 1, 0);
 
@@ -74,7 +74,9 @@ void Window::Draw(int width, int height)
 	SetupCamera();
 	ProcessInput();
 
+	m_fieldRenderer.Render(m_field);
 	m_tankRenderer.Render(m_tank);
+
 }
 
 void Window::ProcessInput()

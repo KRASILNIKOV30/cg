@@ -1,5 +1,10 @@
 #include "ModelMaterial.h"
 
+ModelMaterial::ModelMaterial()
+	: m_twoSided(false)
+{
+}
+
 Material& ModelMaterial::GetMaterial()
 {
 	return m_material;
@@ -29,4 +34,14 @@ TextureMap const& ModelMaterial::GetTextureMap1() const
 TextureMap& ModelMaterial::GetTextureMap1()
 {
 	return m_textureMap1;
+}
+
+bool ModelMaterial::IsTwoSided() const
+{
+	return m_twoSided;
+}
+
+void ModelMaterial::SetTwoSided(bool value)
+{
+	m_twoSided = value;
 }

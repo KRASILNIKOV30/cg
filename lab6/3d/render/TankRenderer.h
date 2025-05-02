@@ -24,7 +24,7 @@ public:
 		const auto angle = GetAngle(rotation);
 		glRotatef(angle, 0, 1, 0);
 
-		ModelRenderer::RenderModel(m_model);
+		m_renderer.RenderModel(m_model);
 
 		glPopMatrix();
 	}
@@ -33,7 +33,7 @@ private:
 	void Load()
 	{
 		const ModelLoader loader;
-		loader.LoadObjFile("res/model.obj", m_model);
+		loader.LoadObjFile("tank.obj", m_model);
 		m_loaded = true;
 	}
 
@@ -56,4 +56,5 @@ private:
 private:
 	Model m_model;
 	bool m_loaded = false;
+	ModelRenderer m_renderer;
 };
