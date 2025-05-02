@@ -7,11 +7,11 @@ class Field
 public:
 	Field();
 
-	[[nodiscard]] BlockType GetBlock(const Point& pos) const;
-	[[nodiscard]] bool CanTankPass(const Point& pos) const;
-	[[nodiscard]] bool CanProjectilePass(const Point& pos) const;
-	bool DestroyBlock(const Point& pos);
-	[[nodiscard]] static bool IsValidPosition(const Point& pos);
+	[[nodiscard]] BlockType GetBlock(int x, int y) const;
+	[[nodiscard]] bool CanTankPass(int x, int y) const;
+	[[nodiscard]] bool CanProjectilePass(int x, int y) const;
+	bool DestroyBlock(int x, int y);
+	[[nodiscard]] static bool IsValidPosition(int x, int y);
 
 private:
 	FieldType m_grid;

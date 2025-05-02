@@ -5,36 +5,36 @@ Field::Field()
 {
 }
 
-BlockType Field::GetBlock(const Point& pos) const
+BlockType Field::GetBlock(int x, int y) const
 {
-	return IsValidPosition(pos)
-		? static_cast<BlockType>(m_grid[pos.y][pos.x])
+	return IsValidPosition(x, y)
+		? static_cast<BlockType>(m_grid[y][x])
 		: ARMOR;
 }
 
-bool Field::CanTankPass(const Point& pos) const
+bool Field::CanTankPass(int x, int y) const
 {
-	return GetBlock(pos) == EARTH;
+	return GetBlock(x, y) == EARTH;
 }
 
-bool Field::CanProjectilePass(const Point& pos) const
+bool Field::CanProjectilePass(int x, int y) const
 {
-	return GetBlock(pos) != ARMOR;
+	return GetBlock(x, y) != ARMOR;
 }
 
-bool Field::DestroyBlock(const Point& pos)
+bool Field::DestroyBlock(int x, int y)
 {
-	if (!IsValidPosition(pos) || m_grid[pos.y][pos.x] != BRICK)
+	if (!IsValidPosition(x, y) || m_grid[y][x] != BRICK)
 	{
 		return false;
 	}
 
-	m_grid[pos.y][pos.x] = EARTH;
+	m_grid[y][x] = EARTH;
 	return true;
 }
 
-bool Field::IsValidPosition(const Point& pos)
+bool Field::IsValidPosition(int x, int y)
 {
-	return pos.x >= 0 && pos.x < FIELD_WIDTH &&
-		pos.y >= 0 && pos.y < FIELD_HEIGHT;
+	return x >= 0 && x < FIELD_WIDTH &&
+		y >= 0 && y < FIELD_HEIGHT;
 }

@@ -10,8 +10,8 @@ namespace
 {
 constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
 
-constexpr double Z_NEAR = 0.1;
-constexpr double Z_FAR = 20;
+constexpr double Z_NEAR = 2;
+constexpr double Z_FAR = 60;
 
 glm::dmat4x4 Orthonormalize(const glm::dmat4x4& m)
 {
@@ -59,8 +59,8 @@ void Window::OnRunStart()
 	// const auto cameraPosition = modelCenter + Vector3f(modelDiagonal, modelDiagonal / 2, modelDiagonal);
 	glLoadIdentity();
 	gluLookAt(
-		2, 2, 2,
-		0, 0, 0,
+		-5, 12, 8,
+		8, 0, 8,
 		0, 1, 0);
 
 }
