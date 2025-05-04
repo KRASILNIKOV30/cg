@@ -87,24 +87,35 @@ public:
 		return m_fireCooldown <= 0;
 	}
 
-	void MoveForward()
+	void MoveForward(Field const& field, float tankLength)
 	{
+		// учитывать время
+		auto newPosition = m_position;
+		auto tankFront = m_position;
+		const auto halfTankLength = tankLength / 2;
 		switch (m_rotation)
 		{
 		case TankRotation::UP:
-			m_position.y += m_speed;
+			newPosition.y += m_speed;
+			tankFront.y += m_speed + halfTankLength;
 			break;
 		case TankRotation::RIGHT:
-			m_position.x += m_speed;
+			newPosition.x += m_speed;
+			tankFront.x += m_speed + halfTankLength;
 			break;
 		case TankRotation::DOWN:
-			m_position.y -= m_speed;
+			newPosition.y -= m_speed;
+			tankFront.y -= m_speed + halfTankLength;
 			break;
 		case TankRotation::LEFT:
-			m_position.x -= m_speed;
+			newPosition.x -= m_speed;
+			tankFront.x -= m_speed + halfTankLength;
 			break;
 		}
-		m_positionChangedSignal();
+		if (field.CanTankPass(tankFront))
+		{
+			m_position = newPosition;
+		}
 	}
 
 	void Rotate(const bool clockwise)

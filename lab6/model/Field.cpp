@@ -12,8 +12,10 @@ BlockType Field::GetBlock(int x, int y) const
 		: ARMOR;
 }
 
-bool Field::CanTankPass(int x, int y) const
+bool Field::CanTankPass(Point const& point) const
 {
+	const auto x = static_cast<int>(point.x);
+	const auto y = static_cast<int>(point.y);
 	return GetBlock(x, y) == EARTH;
 }
 

@@ -89,7 +89,7 @@ void Window::ProcessInput()
 	});
 	if (IsKeyPressed(GLFW_KEY_UP))
 	{
-		m_tank.MoveForward();
+		m_tank.MoveForward(m_field, m_tankRenderer.GetLength());
 	}
 }
 

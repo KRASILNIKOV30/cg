@@ -4,6 +4,8 @@
 #include "../../model/Tank.h"
 #include "../model/ModelRenderer.h"
 
+#include <iostream>
+
 class TankRenderer
 {
 public:
@@ -24,9 +26,22 @@ public:
 		const auto angle = GetAngle(rotation);
 		glRotatef(angle, 0, 1, 0);
 
+		glScalef(m_scale, m_scale, m_scale);
+
 		m_renderer.RenderModel(m_model);
 
 		glPopMatrix();
+	}
+
+	[[nodiscard]] float GetLength()
+	{
+		if (!m_loaded)
+		{
+			Load();
+		}
+		const auto bb = m_model.GetBoundingBox();
+		const auto length = bb.GetMaxCoord().z - bb.GetMinCoord().z;
+		return length * m_scale;
 	}
 
 private:
@@ -34,6 +49,10 @@ private:
 	{
 		const ModelLoader loader;
 		loader.LoadObjFile("tank.obj", m_model);
+		const auto bb = m_model.GetBoundingBox();
+		const auto size = bb.GetSize();
+		const auto width = std::min(size.x, size.z);
+		m_scale = (1.0f / width) * 0.8f;
 		m_loaded = true;
 	}
 
@@ -57,4 +76,5 @@ private:
 	Model m_model;
 	bool m_loaded = false;
 	ModelRenderer m_renderer;
+	float m_scale = 1.0f;
 };
