@@ -40,6 +40,11 @@ void main()
 	{
 		gl_FragColor = whiteColor;
 	}
+
+	if (!gl_FrontFacing)
+	{
+		gl_FragColor = (vec4(0, 1.0, 0, 1.0));
+	}
 }
 )" }
 	{

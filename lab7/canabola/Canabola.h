@@ -27,7 +27,7 @@ void main()
 	pos.y = canabolaR * sin(x);
 	pos.x = canabolaR * cos(x);
 
-	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
+	gl_Position = gl_ModelViewProjectionMatrix * pos;
 	gl_FrontColor = mix(firstColor, secondColor, mod(pos.y, 0.1) * 10.0);
 }
 )",
@@ -37,6 +37,7 @@ void main()
 	gl_FragColor = gl_Color;
 }
 )" }
+	// как во фрагментном шейдере узнать, к лицевой стороне примитива относится фрагмент или нет (выяснил)
 	{
 	}
 

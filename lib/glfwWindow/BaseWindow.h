@@ -53,6 +53,10 @@ private:
 	{
 	}
 
+	virtual void OnIdle(double deltaTime)
+	{
+	}
+
 	static GLFWwindow* MakeWindow(int w, int h, const char* title);
 
 	GLFWwindow* m_window;

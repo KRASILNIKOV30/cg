@@ -96,6 +96,7 @@ void Window::InitShaders()
 {
 	m_canabola.emplace();
 	m_flag.emplace();
+	m_morphingObject.emplace();
 }
 
 void Window::Draw(int width, int height)
@@ -108,8 +109,9 @@ void Window::Draw(int width, int height)
 
 	SetupCameraMatrix();
 
-	m_flag->Render();
 	// m_canabola->Render();
+	// m_flag->Render();
+	m_morphingObject->Render();
 }
 
 void Window::SetupCameraMatrix()
@@ -120,14 +122,12 @@ void Window::SetupCameraMatrix()
 
 void Window::OnKey(int key, int /*scanCode*/, int action, int /*mods*/)
 {
-	if (action == GLFW_PRESS && key == ' ')
+}
+
+void Window::OnIdle(double deltaTime)
+{
+	if (m_morphingObject)
 	{
-		m_usePointLight = !m_usePointLight;
-		glfwPostEmptyEvent();
-	}
-	else if (action == GLFW_PRESS && key == 'S')
-	{
-		m_useSpecular = !m_useSpecular;
-		glfwPostEmptyEvent();
+		m_morphingObject->OnIdle(deltaTime);
 	}
 }

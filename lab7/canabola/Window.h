@@ -1,6 +1,7 @@
 #pragma once
 #include "Canabola.h"
 #include "Flag.h"
+#include "MorphingObject.h"
 #include "../../lib/glfwWindow/BaseWindow.h"
 #include "../../lib/glfwWindow/GLEWInitializer.h"
 
@@ -23,21 +24,19 @@ private:
 	void Draw(int width, int height) override;
 	void SetupCameraMatrix();
 	void OnKey(int /*key*/, int /*scanCode*/, int /*action*/, int /*mods*/) override;
+	void OnIdle(double deltaTime) override;
 
 private:
 	std::optional<GLEWInitializer> m_glewInitializer;
 	std::optional<Canabola> m_canabola;
 	std::optional<Flag> m_flag;
-	static constexpr double DISTANCE_TO_ORIGIN = 3;
+	std::optional<MorphingObject> m_morphingObject;
+
+	static constexpr double DISTANCE_TO_ORIGIN = 4;
 	bool m_leftButtonPressed = false;
 	glm::dvec2 m_mousePos = {};
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
 		glm::dvec3{ 0.0, 0.0, DISTANCE_TO_ORIGIN },
 		glm::dvec3{ 0.0, 0.0, 0.0 },
 		glm::dvec3{ 0.0, 1.0, 0.0 });
-
-	bool m_useSpecular = false;
-	bool m_usePointLight = true;
-	glm::vec4 m_pointLightPos{ 0, 0, 0, 1.0 };
-	glm::vec4 m_directedLightDirection{ 0, 0, 1.0, 0.0 };
 };

@@ -50,8 +50,16 @@ void BaseWindow::Run()
 		OnResize(size.x, size.y);
 	}
 
+	double lastTime = glfwGetTime();
+
 	while (!glfwWindowShouldClose(m_window))
 	{
+		double currentTime = glfwGetTime();
+		double deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+
+		OnIdle(deltaTime);
+
 		auto size = GetFramebufferSize();
 		Draw(size.x, size.y);
 		glFinish();

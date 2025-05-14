@@ -20,6 +20,7 @@ add_executable(canabola
         canabola/Window.cpp
         canabola/main.cpp
         canabola/Flag.h
+        canabola/MorphingObject.h
 )
 
 find_package(glfw3 REQUIRED)
