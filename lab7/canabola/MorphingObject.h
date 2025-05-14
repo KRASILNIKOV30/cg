@@ -3,7 +3,7 @@
 #include <chrono>
 
 using namespace std::chrono;
-constexpr float ANIMATION_SPEED = 0.1f;
+constexpr float ANIMATION_SPEED = 0.2f;
 
 class MorphingObject
 {
@@ -43,7 +43,7 @@ vec3 kleinBottleFn(vec4 originPoint)
     }
 	resultPoint.z = -2.0 * (1.0 - cos(u) / 2.0) * sin(v);
 
-    return resultPoint * 0.2;
+    return resultPoint * 0.25;
 }
 
 void main()
