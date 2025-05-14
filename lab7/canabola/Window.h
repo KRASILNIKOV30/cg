@@ -1,5 +1,6 @@
 #pragma once
 #include "Canabola.h"
+#include "Flag.h"
 #include "../../lib/glfwWindow/BaseWindow.h"
 #include "../../lib/glfwWindow/GLEWInitializer.h"
 
@@ -26,12 +27,13 @@ private:
 private:
 	std::optional<GLEWInitializer> m_glewInitializer;
 	std::optional<Canabola> m_canabola;
+	std::optional<Flag> m_flag;
 	static constexpr double DISTANCE_TO_ORIGIN = 3;
 	bool m_leftButtonPressed = false;
 	glm::dvec2 m_mousePos = {};
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(
 		glm::dvec3{ 0.0, 0.0, DISTANCE_TO_ORIGIN },
-		glm::dvec3{ 0.0, 1.0, 0.0 },
+		glm::dvec3{ 0.0, 0.0, 0.0 },
 		glm::dvec3{ 0.0, 1.0, 0.0 });
 
 	bool m_useSpecular = false;

@@ -95,11 +95,12 @@ void Window::OnRunStart()
 void Window::InitShaders()
 {
 	m_canabola.emplace();
+	m_flag.emplace();
 }
 
 void Window::Draw(int width, int height)
 {
-	glClearColor(1, 1, 1, 1);
+	glClearColor(0.8, 0.8, 0.8, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -107,7 +108,8 @@ void Window::Draw(int width, int height)
 
 	SetupCameraMatrix();
 
-	m_canabola->Render();
+	m_flag->Render();
+	// m_canabola->Render();
 }
 
 void Window::SetupCameraMatrix()

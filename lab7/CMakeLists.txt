@@ -19,6 +19,7 @@ add_executable(canabola
         canabola/Window.h
         canabola/Window.cpp
         canabola/main.cpp
+        canabola/Flag.h
 )
 
 find_package(glfw3 REQUIRED)
