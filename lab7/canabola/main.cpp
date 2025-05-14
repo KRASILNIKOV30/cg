@@ -8,7 +8,7 @@ int main()
 {
 	glewInit();
 	GLFWInitializer initGLFW;
-	Window window{ 800, 600, "Battle City 3D" };
+	Window window{ 800, 600, "canabola" };
 	window.Run();
 
 	return EXIT_SUCCESS;

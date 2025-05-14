@@ -111,9 +111,10 @@ void Window::Draw(int width, int height)
 
 	glBegin(GL_LINE_LOOP);
 	{
-		for (double i = 0; i < 2 * M_PI; i += M_PI / 1000)
+		for (int i = 0; i < 2000; i++)
 		{
-			glVertex3d(i, 0, 0);
+			const double x = 2.0 * M_PI * i / 2000.0;
+			glVertex3d(x, 0, 0);
 		}
 	}
 	glEnd();
