@@ -49,6 +49,10 @@ private:
 	{
 	}
 
+	virtual void OnKey(int /*key*/, int /*scanCode*/, int /*action*/, int /*mods*/)
+	{
+	}
+
 	static GLFWwindow* MakeWindow(int w, int h, const char* title);
 
 	GLFWwindow* m_window;
