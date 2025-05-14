@@ -109,7 +109,7 @@ void Window::Draw(int width, int height)
 
 	glUseProgram(m_canabola->GetProgramId());
 
-	glBegin(GL_LINE_LOOP);
+	glBegin(GL_LINE_STRIP);
 	{
 		for (int i = 0; i < 2000; i++)
 		{

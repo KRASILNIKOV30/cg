@@ -8,7 +8,10 @@ public:
 		: m_program{ R"(
 float calculateCanabolaR(float x)
 {
-	return (1.0 + sin(x)) * (1.0 + 0.9 * cos(8.0 * x)) * (1.0 + 0.1 * cos(24.0 * x)) * (0.5 + 0.3 * cos(140.0 * x));
+	return (1.0 + sin(x)) *
+		(1.0 + 0.9 * cos(8.0 * x)) *
+		(1.0 + 0.1 * cos(24.0 * x)) *
+		(0.5 + 0.2 * cos(140.0 * x));
 }
 
 vec4 firstColor = vec4(0.2, 0.6, 0.3, 1.0);
