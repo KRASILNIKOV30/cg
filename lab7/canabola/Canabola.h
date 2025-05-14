@@ -1,5 +1,6 @@
 #pragma once
 #include "../../lib/shaders/Program.h"
+#include <cmath>
 
 class Canabola
 {
@@ -39,9 +40,21 @@ void main()
 	{
 	}
 
-	[[nodiscard]] GLuint GetProgramId() const noexcept
+	void Render() const
 	{
-		return m_program.GetId();
+		glUseProgram(m_program.GetId());
+
+		glBegin(GL_LINE_STRIP);
+		{
+			for (int i = 0; i < 2000; i++)
+			{
+				const double x = 2.0 * M_PI * i / 2000.0;
+				glVertex3d(x, 0, 0);
+			}
+		}
+		glEnd();
+
+		glUseProgram(0);
 	}
 
 private:

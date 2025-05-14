@@ -107,19 +107,7 @@ void Window::Draw(int width, int height)
 
 	SetupCameraMatrix();
 
-	glUseProgram(m_canabola->GetProgramId());
-
-	glBegin(GL_LINE_STRIP);
-	{
-		for (int i = 0; i < 2000; i++)
-		{
-			const double x = 2.0 * M_PI * i / 2000.0;
-			glVertex3d(x, 0, 0);
-		}
-	}
-	glEnd();
-
-	glUseProgram(0);
+	m_canabola->Render();
 }
 
 void Window::SetupCameraMatrix()
