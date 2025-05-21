@@ -27,7 +27,7 @@ vec3 mobiusStripFn(vec4 originPoint)
 
 vec3 kleinBottleFn(vec4 originPoint)
 {
-        float u = originPoint.x * 2.0 * 3.14159;
+    float u = originPoint.x * 2.0 * 3.14159;
     float v = originPoint.y * 2.0 * 3.14159;
     float r = 1.0;
 
@@ -88,6 +88,7 @@ void main()
 				glColor3f(u, v, z);
 			}
 		}
+		// Поправить цвета, чтобы не было резких переходов на бутылке Клейна
 		glEnd();
 		glBegin(GL_TRIANGLE_STRIP);
 		for (u = 0; u <= 1; u += 0.01f)

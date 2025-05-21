@@ -21,6 +21,7 @@ add_executable(canabola
         canabola/main.cpp
         canabola/Flag.h
         canabola/MorphingObject.h
+        canabola/Tunnel.h
 )
 
 find_package(glfw3 REQUIRED)

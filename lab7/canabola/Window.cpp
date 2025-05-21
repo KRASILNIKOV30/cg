@@ -97,6 +97,7 @@ void Window::InitShaders()
 	m_canabola.emplace();
 	m_flag.emplace();
 	m_morphingObject.emplace();
+	m_tunnel.emplace();
 }
 
 void Window::Draw(int width, int height)
@@ -111,7 +112,8 @@ void Window::Draw(int width, int height)
 
 	// m_canabola->Render();
 	// m_flag->Render();
-	m_morphingObject->Render();
+	// m_morphingObject->Render();
+	m_tunnel->Render();
 }
 
 void Window::SetupCameraMatrix()

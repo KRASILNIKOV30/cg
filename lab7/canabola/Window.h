@@ -2,6 +2,7 @@
 #include "Canabola.h"
 #include "Flag.h"
 #include "MorphingObject.h"
+#include "Tunnel.h"
 #include "../../lib/glfwWindow/BaseWindow.h"
 #include "../../lib/glfwWindow/GLEWInitializer.h"
 
@@ -31,6 +32,7 @@ private:
 	std::optional<Canabola> m_canabola;
 	std::optional<Flag> m_flag;
 	std::optional<MorphingObject> m_morphingObject;
+	std::optional<Tunnel> m_tunnel;
 
 	static constexpr double DISTANCE_TO_ORIGIN = 4;
 	bool m_leftButtonPressed = false;
