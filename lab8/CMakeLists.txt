@@ -37,6 +37,7 @@ set(GEOMETRY_SOURCES
         shader/SimpleDiffuseShader.h
         light/OmniLightSource.h
         shader/PhongLightShader.h
+        random/Random.h
 )
 
 find_package(SDL2 REQUIRED)

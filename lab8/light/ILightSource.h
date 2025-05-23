@@ -41,6 +41,8 @@ public:
 	*/
 	[[nodiscard]] virtual Vector3d GetDirectionFromPoint(Vector3d const& point) const = 0;
 
+	[[nodiscard]] virtual Vector3d GetRandomDirectionFromPoint(Vector3d const& point) const = 0;
+
 	virtual ~ILightSource() = default;
 };
 

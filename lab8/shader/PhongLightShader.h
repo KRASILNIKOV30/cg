@@ -30,24 +30,20 @@ public:
 			const auto surfacePoint = shadeContext.GetSurfacePoint();
 			Vector3d lightDirection = light.GetDirectionFromPoint(surfacePoint);
 
-			Ray shadowRay{ surfacePoint, lightDirection };
-			Intersection intersection;
-			SceneObject const* sceneObj;
-			const bool isInShadow = scene.GetFirstHit(shadowRay, intersection, &sceneObj);
-			const double lightIntensity = isInShadow
-				? 0.0
-				: light.GetIntensityInDirection(-lightDirection);
+			const auto shadowFactor = GetShadow(surfacePoint, light, scene);
+			const double lightIntensity = light.GetIntensityInDirection(-lightDirection) * shadowFactor;
 
 			Vector3d const& n = shadeContext.GetSurfaceNormal();
+			const auto normLightDir = Normalize(lightDirection);
 
-			const double nDotL = Max(Dot(n, Normalize(lightDirection)), 0.0);
+			const double nDotL = Max(Dot(n, normLightDir), 0.0);
 			const Vector4f diffuse = static_cast<float>(nDotL * lightIntensity) * light.GetDiffuseIntensity() * m_material.GetDiffuseColor();
 			shadedColor += diffuse;
 
 			const Vector4f ambient = light.GetAmbientIntensity() * m_material.GetAmbientColor();
 			shadedColor += ambient;
 
-			Vector3d reflectedLightVector = Normalize(2 * nDotL * n - Normalize(lightDirection));
+			Vector3d reflectedLightVector = Normalize(2 * nDotL * n - normLightDir);
 			const double nDotH = Max(Dot(n, reflectedLightVector), 0.0);
 			const auto shiness = m_material.GetShiness();
 			const Vector4f specular = static_cast<float>(std::pow(nDotH, shiness) * lightIntensity) * light.GetSpecularIntensity() * m_material.GetSpecularColor();
@@ -55,6 +51,27 @@ public:
 		}
 
 		return shadedColor;
+	}
+
+private:
+	[[nodiscard]] static double GetShadow(Vector3d const& surfacePoint, ILightSource const& light, Scene const& scene)
+	{
+		constexpr int shadowSamples = 100;
+		int reached = 0;
+		Intersection intersection;
+		SceneObject const* sceneObj;
+
+		for (int i = 0; i <= shadowSamples; ++i)
+		{
+			const auto lightDir = light.GetRandomDirectionFromPoint(surfacePoint);
+			Ray shadowRay{ surfacePoint, lightDir };
+			if (!scene.GetFirstHit(shadowRay, intersection, &sceneObj))
+			{
+				++reached;
+			}
+		}
+
+		return static_cast<double>(reached) / shadowSamples;
 	}
 
 private:

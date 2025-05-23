@@ -17,7 +17,7 @@ int main()
 			throw std::runtime_error(SDL_GetError());
 		}
 
-		RaytraceView view{ displayMode.w, displayMode.h };
+		RaytraceView view{ 800, 600 };
 		view.Run();
 	}
 	catch (std::exception const& e)

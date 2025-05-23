@@ -2,6 +2,7 @@
 #include "LightSourceImpl.h"
 #include "../geometry/vector/Vector4.h"
 #include "../geometry/vector/VectorMath.h"
+#include "../random/Random.h"
 
 /*
 Класс "Точечный источник света", характеризующийся позицией в пространстве.
@@ -41,6 +42,18 @@ public:
 			Направление от точки к источнику в мировых координатах
 		*/
 		return GetPositionInWorldSpace() - point;
+	}
+
+	[[nodiscard]] Vector3d GetRandomDirectionFromPoint(Vector3d const& point) const override
+	{
+		const double theta = 2.0 * M_PI * RandomDouble();
+		const double phi = std::acos(1.0 - 2.0 * RandomDouble());
+
+		const double x = m_radius * std::sin(phi) * std::cos(theta);
+		const double y = m_radius * std::sin(phi) * std::sin(theta);
+		const double z = m_radius * std::cos(phi);
+
+		return m_positionInWorldSpace + Vector3d(x, y, z) - point;
 	}
 
 	/*
@@ -98,6 +111,7 @@ private:
 	double m_constantAttenuation;
 	double m_linearAttenuation;
 	double m_quadraticAttenuation;
+	double m_radius = 0.5;
 };
 
 using OmniLightPtr = std::shared_ptr<OmniLightSource>;
