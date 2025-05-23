@@ -26,12 +26,16 @@ set(GEOMETRY_SOURCES
         render/RenderContext.h
         render/Renderer.cpp
         render/Renderer.h
-        render/RaytraceView.cpp
-        render/RaytraceView.h
+        view/RaytraceView.cpp
+        view/RaytraceView.h
         window/Window.cpp
         window/Window.h
         shader/CheckerShader.h
         objects/Plane.h
+        objects/Sphere.h
+        material/SimpleMaterial.h
+        shader/SimpleDiffuseShader.h
+        light/OmniLightSource.h
 )
 
 find_package(SDL2 REQUIRED)

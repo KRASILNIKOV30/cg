@@ -1,6 +1,10 @@
 #include "RaytraceView.h"
 #include "../shader/CheckerShader.h"
 #include "../objects/Plane.h"
+#include "../material/SimpleMaterial.h"
+#include "../shader/SimpleDiffuseShader.h"
+#include "../objects/Sphere.h"
+#include "../light/OmniLightSource.h"
 
 RaytraceView::RaytraceView(int width, int height)
 	: Window(width, height, "Raytracer"),
@@ -44,9 +48,9 @@ void RaytraceView::InitializeScene()
 	m_scene.SetBackdropColor(Vector4f(1, 0, 1, 1));
 
 	AddSomePlane();
-	// AddSomeSpheres();
+	AddSomeSpheres();
 	// AddSomeConicCylinders();
-	// AddSomeLight();
+	AddSomeLight();
 
 	const auto width = GetWidth();
 	const auto height = GetHeight();
@@ -69,9 +73,26 @@ void RaytraceView::AddSomePlane()
 	AddPlane(std::make_shared<CheckerShader>(checkerShaderTransform), 0, 1, 0, 0);
 }
 
+void RaytraceView::AddSomeSpheres()
+{
+	SimpleMaterial yellow({ 1, 1, 0, 1 });
+	auto shader = std::make_shared<SimpleDiffuseShader>(yellow);
+	AddSphere(shader, 1, Vector3d(0, 1, 0));
+	AddSphere(std::move(shader), 0.5, Vector3d(2, 0, 0));
+}
+
+// Создаем и добавляем в сцену точечный источник света
+void RaytraceView::AddSomeLight()
+{
+	OmniLightPtr pLight(new OmniLightSource(Vector3d(-5, 5, 10)));
+	pLight->SetDiffuseIntensity(Vector4f(1, 1, 1, 1));
+	pLight->SetAttenuation(1, 0, 0.0005);
+	m_scene.AddLightSource(pLight);
+}
+
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
 {
-	return AddSceneObject(std::make_shared<Plane>(a, b, c, d, transform), std::move(shader));
+	return AddSceneObject(std::make_shared<Plane>(a, b, c, d, transform), shader);
 }
 
 SceneObject& RaytraceView::AddSceneObject(std::shared_ptr<IGeometryObject const> object, std::shared_ptr<IShader const> shader)
@@ -79,6 +100,11 @@ SceneObject& RaytraceView::AddSceneObject(std::shared_ptr<IGeometryObject const>
 	const auto obj = std::make_shared<SceneObject>(std::move(object), std::move(shader));
 	m_scene.AddObject(obj);
 	return *obj;
+}
+
+SceneObject& RaytraceView::AddSphere(std::shared_ptr<IShader const> const& shader, double radius, Vector3d const& center, Matrix4d const& transform)
+{
+	return AddSceneObject(std::make_shared<Sphere>(radius, center, transform), shader);
 }
 
 // Остальные методы (AddSphere, InitializeScene и т. д.) остаются без изменений,

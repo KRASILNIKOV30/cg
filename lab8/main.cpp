@@ -1,11 +1,23 @@
-#include "render/RaytraceView.h"
+#include "view/RaytraceView.h"
 #include <iostream>
 
 int main()
 {
 	try
 	{
-		RaytraceView view{ 800, 600 };
+		if (SDL_Init(SDL_INIT_VIDEO) != 0)
+		{
+			throw std::runtime_error(SDL_GetError());
+		}
+
+		SDL_DisplayMode displayMode;
+		if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0)
+		{
+			SDL_Quit();
+			throw std::runtime_error(SDL_GetError());
+		}
+
+		RaytraceView view{ displayMode.w, displayMode.h };
 		view.Run();
 	}
 	catch (std::exception const& e)
