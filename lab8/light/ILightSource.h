@@ -22,6 +22,12 @@ public:
 	virtual void SetDiffuseIntensity(Vector4f const& diffuseIntensity) = 0;
 	[[nodiscard]] virtual Vector4f const& GetDiffuseIntensity() const = 0;
 
+	virtual void SetAmbientIntensity(Vector4f const& ambientIntensity) = 0;
+	[[nodiscard]] virtual Vector4f const& GetAmbientIntensity() const = 0;
+
+	virtual void SetSpecularIntensity(Vector4f const& specularIntensity) = 0;
+	[[nodiscard]] virtual Vector4f const& GetSpecularIntensity() const = 0;
+
 	/*
 	Интенсивность света, излучаемого в направлении от источника к заданной точке, заданной в мировой системе координат.
 	Для точечных источников позволяет задать ослабление света в зависимости от расстояния

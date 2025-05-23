@@ -41,6 +41,26 @@ public:
 		return m_diffuseIntensity;
 	}
 
+	void SetAmbientIntensity(Vector4f const& ambientIntensity) override
+	{
+		m_ambientIntensity = ambientIntensity;
+	}
+
+	[[nodiscard]] Vector4f const& GetAmbientIntensity() const override
+	{
+		return m_ambientIntensity;
+	}
+
+	void SetSpecularIntensity(Vector4f const& specularIntensity) override
+	{
+		m_specularIntensity = specularIntensity;
+	}
+
+	[[nodiscard]] Vector4f const& GetSpecularIntensity() const override
+	{
+		return m_specularIntensity;
+	}
+
 protected:
 	explicit LightSourceImpl(Matrix4d const& transform = Matrix4d())
 		: m_transform(transform)
@@ -49,6 +69,7 @@ protected:
 
 private:
 	Vector4f m_diffuseIntensity;
+	Vector4f m_ambientIntensity;
+	Vector4f m_specularIntensity;
 	Matrix4d m_transform;
-
 };

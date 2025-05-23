@@ -36,6 +36,7 @@ set(GEOMETRY_SOURCES
         material/SimpleMaterial.h
         shader/SimpleDiffuseShader.h
         light/OmniLightSource.h
+        shader/PhongLightShader.h
 )
 
 find_package(SDL2 REQUIRED)

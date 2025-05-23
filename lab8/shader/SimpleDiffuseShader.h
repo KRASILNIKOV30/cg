@@ -11,7 +11,7 @@ class Scene;
 class SimpleDiffuseShader final : public IShader
 {
 public:
-	explicit SimpleDiffuseShader(SimpleMaterial const& material = SimpleMaterial({ 0.8, 0.8, 0.8, 1 }))
+	explicit SimpleDiffuseShader(SimpleMaterial const& material)
 		: m_material(material)
 	{
 	}
