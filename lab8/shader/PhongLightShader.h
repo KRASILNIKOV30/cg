@@ -45,7 +45,6 @@ public:
 			const double nDotH = Max(Dot(n, reflectedLightVector), 0.0);
 			const auto shiness = m_material.GetShiness();
 			const Vector4f specular = static_cast<float>(std::pow(nDotH, shiness) * lightIntensity) * light.GetSpecularIntensity() * m_material.GetSpecularColor();
-			std::cout << specular.x << " " << specular.y << " " << specular.z << std::endl;
 			shadedColor += specular;
 		}
 

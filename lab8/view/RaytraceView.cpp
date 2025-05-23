@@ -77,10 +77,9 @@ void RaytraceView::AddSomePlane()
 void RaytraceView::AddSomeSpheres()
 {
 	SimpleMaterial yellow({ 0.8, 0.8, 0, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.4, 0.4, 0.4, 1 }, 100);
-	const auto simpleShader = std::make_shared<SimpleDiffuseShader>(yellow);
 	const auto phongShader = std::make_shared<PhongLightShader>(yellow);
 	AddSphere(phongShader, 1.5, Vector3d(-1, 1.5, 0));
-	AddSphere(simpleShader, 1, Vector3d(2.5, 0, 0));
+	AddSphere(phongShader, 1, Vector3d(2.5, 0, 0));
 }
 
 // Создаем и добавляем в сцену точечный источник света
