@@ -41,10 +41,14 @@ set(GEOMETRY_SOURCES
 )
 
 find_package(SDL2 REQUIRED)
+find_package(OpenMP REQUIRED)
 
 add_executable(phong
         ${GEOMETRY_SOURCES}
         main.cpp
 )
 
-target_link_libraries(phong PRIVATE SDL2::SDL2)
+target_link_libraries(phong PRIVATE
+        SDL2::SDL2
+        OpenMP::OpenMP_CXX
+)
