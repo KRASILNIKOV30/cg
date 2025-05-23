@@ -4,8 +4,6 @@
 #include "ShadeContext.h"
 #include "../scene/Scene.h"
 
-#include <iostream>
-
 class PhongLightShader final : public IShader
 {
 public:
@@ -23,15 +21,23 @@ public:
 	{
 		Scene const& scene = shadeContext.GetScene();
 		Vector4f shadedColor;
-
 		const size_t numLights = scene.GetLightsCount();
 
 		// Пробегаемся по всем источникам света в сцене
 		for (size_t i = 0; i < numLights; ++i)
 		{
 			ILightSource const& light = scene.GetLight(i);
-			Vector3d lightDirection = light.GetDirectionFromPoint(shadeContext.GetSurfacePoint());
-			const double lightIntensity = light.GetIntensityInDirection(-lightDirection);
+			const auto surfacePoint = shadeContext.GetSurfacePoint();
+			Vector3d lightDirection = light.GetDirectionFromPoint(surfacePoint);
+
+			Ray shadowRay{ surfacePoint, lightDirection };
+			Intersection intersection;
+			SceneObject const* sceneObj;
+			const bool isInShadow = scene.GetFirstHit(shadowRay, intersection, &sceneObj);
+			const double lightIntensity = isInShadow
+				? 0.0
+				: light.GetIntensityInDirection(-lightDirection);
+
 			Vector3d const& n = shadeContext.GetSurfaceNormal();
 
 			const double nDotL = Max(Dot(n, Normalize(lightDirection)), 0.0);

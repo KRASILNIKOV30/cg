@@ -2,7 +2,6 @@
 #include "../shader/CheckerShader.h"
 #include "../objects/Plane.h"
 #include "../material/SimpleMaterial.h"
-#include "../shader/SimpleDiffuseShader.h"
 #include "../objects/Sphere.h"
 #include "../light/OmniLightSource.h"
 #include "../shader/PhongLightShader.h"
@@ -68,10 +67,16 @@ void RaytraceView::InitializeScene()
 
 void RaytraceView::AddSomePlane()
 {
-	Matrix4d checkerShaderTransform;
-	checkerShaderTransform.Scale(0.2, 0.2, 0.2);
-	checkerShaderTransform.Translate(0.25, 0.25, 0.25);
-	AddPlane(std::make_shared<CheckerShader>(checkerShaderTransform), 0, 1, 0, 0);
+	Matrix4d floorTransform;
+	floorTransform.Scale(0.2, 0.2, 0.2);
+	floorTransform.Translate(0.25, 0.25, 0.25);
+	SimpleMaterial floorMaterial(
+		{ 0.8, 0.8, 0.8, 1 },
+		{ 0.2, 0.2, 0.2, 1 },
+		{ 0.1, 0.1, 0.1, 1 },
+		0
+		);
+	AddPlane(std::make_shared<PhongLightShader>(floorMaterial), 0, 1, 0, 0);
 }
 
 void RaytraceView::AddSomeSpheres()
@@ -85,7 +90,7 @@ void RaytraceView::AddSomeSpheres()
 // Создаем и добавляем в сцену точечный источник света
 void RaytraceView::AddSomeLight()
 {
-	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-5, 10, 10)));
+	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-5, 10, 8)));
 	pLight->SetDiffuseIntensity({ 1, 1, 1, 1 });
 	pLight->SetAmbientIntensity({ 0.5, 0.5, 0.5, 1 });
 	pLight->SetSpecularIntensity({ 1, 1, 1, 1 });
