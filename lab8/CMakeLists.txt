@@ -38,6 +38,7 @@ set(GEOMETRY_SOURCES
         light/OmniLightSource.h
         shader/PhongLightShader.h
         random/Random.h
+        objects/Paraboloid.h
 )
 
 find_package(SDL2 REQUIRED)

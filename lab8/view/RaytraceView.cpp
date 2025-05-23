@@ -4,6 +4,7 @@
 #include "../material/SimpleMaterial.h"
 #include "../objects/Sphere.h"
 #include "../light/OmniLightSource.h"
+#include "../objects/Paraboloid.h"
 #include "../shader/PhongLightShader.h"
 
 RaytraceView::RaytraceView(int width, int height)
@@ -45,11 +46,11 @@ void RaytraceView::OnRender()
 
 void RaytraceView::InitializeScene()
 {
-	m_scene.SetBackdropColor(Vector4f(1, 0, 1, 1));
+	m_scene.SetBackdropColor(Vector4f(0.8, 0.1, 0.8, 1));
 
 	AddSomePlane();
-	AddSomeSpheres();
-	// AddSomeConicCylinders();
+	//AddSomeSpheres();
+	AddSomeParaboloid();
 	AddSomeLight();
 
 	const auto width = GetWidth();
@@ -90,12 +91,21 @@ void RaytraceView::AddSomeSpheres()
 // Создаем и добавляем в сцену точечный источник света
 void RaytraceView::AddSomeLight()
 {
-	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-5, 10, 8)));
+	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-2, 4, 8)));
 	pLight->SetDiffuseIntensity({ 1, 1, 1, 1 });
 	pLight->SetAmbientIntensity({ 0.5, 0.5, 0.5, 1 });
 	pLight->SetSpecularIntensity({ 1, 1, 1, 1 });
 	pLight->SetAttenuation(1, 0, 0.0005);
 	m_scene.AddLightSource(pLight);
+}
+
+void RaytraceView::AddSomeParaboloid()
+{
+	Matrix4d transform;
+	transform.Rotate(90, -1.0, 0, 0);
+	SimpleMaterial green({ 0.2, 0.8, 0.3, 1 }, { 0.2, 0.4, 0.2, 1 }, { 0.4, 0.4, 0.4, 1 }, 100);
+	const auto phongShader = std::make_shared<PhongLightShader>(green);
+	AddParaboloid(phongShader, 1.5, Vector3d(0, -3, 0), transform);
 }
 
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
@@ -108,6 +118,11 @@ SceneObject& RaytraceView::AddSceneObject(std::shared_ptr<IGeometryObject const>
 	const auto obj = std::make_shared<SceneObject>(std::move(object), std::move(shader));
 	m_scene.AddObject(obj);
 	return *obj;
+}
+
+SceneObject& RaytraceView::AddParaboloid(std::shared_ptr<IShader const> const& shader, double scale, Vector3d const& center, Matrix4d const& transform)
+{
+	return AddSceneObject(std::make_shared<Paraboloid>(scale, center, transform), shader);
 }
 
 SceneObject& RaytraceView::AddSphere(std::shared_ptr<IShader const> const& shader, double radius, Vector3d const& center, Matrix4d const& transform)
