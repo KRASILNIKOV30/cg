@@ -62,7 +62,7 @@ void RaytraceView::InitializeScene()
 	m_context.SetProjectionMatrix(proj);
 
 	Matrix4d modelView;
-	modelView.LoadLookAtRH(0, 3, 7, 0, 0, 0, 0, 1, 0);
+	modelView.LoadLookAtRH(0, 4, 4, 0, 2, 0, 0, 1, 0);
 	m_context.SetModelViewMatrix(modelView);
 }
 
@@ -91,7 +91,7 @@ void RaytraceView::AddSomeSpheres()
 // Создаем и добавляем в сцену точечный источник света
 void RaytraceView::AddSomeLight()
 {
-	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-2, 4, 8)));
+	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-3, 5, 5)));
 	pLight->SetDiffuseIntensity({ 1, 1, 1, 1 });
 	pLight->SetAmbientIntensity({ 0.5, 0.5, 0.5, 1 });
 	pLight->SetSpecularIntensity({ 1, 1, 1, 1 });
@@ -102,10 +102,16 @@ void RaytraceView::AddSomeLight()
 void RaytraceView::AddSomeParaboloid()
 {
 	Matrix4d transform;
-	transform.Rotate(90, -1.0, 0, 0);
-	SimpleMaterial green({ 0.2, 0.8, 0.3, 1 }, { 0.2, 0.4, 0.2, 1 }, { 0.4, 0.4, 0.4, 1 }, 100);
-	const auto phongShader = std::make_shared<PhongLightShader>(green);
-	AddParaboloid(phongShader, 1.5, Vector3d(0, -3, 0), transform);
+	transform.Rotate(-90, 1.0, 0, 0);
+	SimpleMaterial green({ 0.2, 0.8, 0.3, 1 }, { 0.2, 0.4, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	SimpleMaterial red({ 0.8, 0.2, 0.3, 1 }, { 0.3, 0.4, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	SimpleMaterial blue({ 0.5, 0.2, 0.8, 1 }, { 0.4, 0.3, 0.4, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	const auto greenShader = std::make_shared<PhongLightShader>(green);
+	const auto redShader = std::make_shared<PhongLightShader>(red);
+	const auto blueShader = std::make_shared<PhongLightShader>(blue);
+	AddParaboloid(greenShader, 1.5, Vector3d(0, 0, 0), transform);
+	AddParaboloid(redShader, 1.0, Vector3d(0, 0, 1.5), transform);
+	AddParaboloid(blueShader, 0.5, Vector3d(0, 0, 2.5), transform);
 }
 
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
