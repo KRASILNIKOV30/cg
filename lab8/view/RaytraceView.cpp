@@ -48,11 +48,10 @@ void RaytraceView::InitializeScene()
 	//
 	AddSomePlane();
 	AddSomeLight();
-
-	//AddSomeSpheres();
-	//AddSomeParaboloid();
+	AddSomeSpheres();
+	// AddSomeParaboloid();
 	// AddSomeTorus();
-	AddSomeMetaball();
+	// AddSomeMetaball();
 
 	const auto width = GetWidth();
 	const auto height = GetHeight();
@@ -89,7 +88,6 @@ void RaytraceView::AddSomeSpheres()
 	AddSphere(phongShader, 1, Vector3d(2.5, 0, 0));
 }
 
-// Создаем и добавляем в сцену точечный источник света
 void RaytraceView::AddSomeLight()
 {
 	const OmniLightPtr pLight(new OmniLightSource(Vector3d(-3, 5, 5)));
@@ -140,8 +138,9 @@ void RaytraceView::AddSomeMetaball()
 	SimpleMaterial material({ 0.4, 0.5, 0.8, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
 	const auto shader = std::make_shared<SimpleDiffuseShader>(material);
 	const Metasphere metasphere1{ { 0, 1.5, 0 }, 1.0, 1.0 };
-	const Metasphere metasphere2{ { -1, 1.0, 0 }, 1.0, 1.5 }; //
-	AddMetaball(shader, { metasphere1, metasphere2 }, { 1, 1, 1 }, transform);
+	const Metasphere metasphere2{ { -1, 1.0, 0 }, 1.0, 1.5 };
+	const Metasphere metasphere3{ { -3, 1.0, 0 }, 1.0, 1.0 };
+	AddMetaball(shader, { metasphere1, metasphere2, metasphere3 }, { 1, 1, 1 }, transform);
 }
 
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)

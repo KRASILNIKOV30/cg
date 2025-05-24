@@ -104,8 +104,6 @@ private:
 			if (std::abs(root.imag()) < EPS)
 			{
 				const double realRoot = root.real();
-
-				// Уникальность (удаление повторов)
 				bool isUnique = true;
 				for (int j = 0; j < count; ++j)
 				{

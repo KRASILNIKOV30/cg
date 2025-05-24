@@ -4,7 +4,6 @@
 #include "../geometry/GeometryObjectWithInitialTransformImpl.h"
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 struct Metasphere
 {
@@ -19,7 +18,7 @@ public:
 	explicit Metaball(std::vector<Metasphere> const& spheres,
 		Vector3d const& center = Vector3d(),
 		Matrix4d const& transform = Matrix4d(),
-		double isoThreshold = 0.5) // Более низкий порог по умолчанию
+		double isoThreshold = 0.5)
 		: GeometryObjectWithInitialTransformImpl(transform)
 		  , m_spheres(spheres)
 		  , m_isoThreshold(isoThreshold)
@@ -39,7 +38,7 @@ public:
 			return false;
 		}
 
-		const double stepSize = 0.05;
+		const double stepSize = 0.005;
 		const int maxSteps = 100;
 		double t = tMin;
 
@@ -50,7 +49,6 @@ public:
 
 			if (field > m_isoThreshold)
 			{
-				// Уточнение пересечения бинарным поиском
 				double t0 = t - stepSize;
 				double t1 = t;
 				for (int j = 0; j < 5; ++j)
@@ -67,8 +65,7 @@ public:
 				}
 				t = (t0 + t1) * 0.5;
 
-				// Вычисляем нормаль
-				Vector3d normal = ComputeNormal(invRay.GetPointAtTime(t));
+				const Vector3d normal = ComputeNormal(invRay.GetPointAtTime(t));
 
 				intersection.AddHit(CreateHitInfo(ray, invRay, t, normal));
 				return true;
@@ -81,10 +78,6 @@ public:
 	}
 
 private:
-	std::vector<Metasphere> m_spheres;
-	double m_isoThreshold;
-	AABB m_aabb;
-
 	void ComputeBoundingBox()
 	{
 		Vector3d min(1e10, 1e10, 1e10);
@@ -118,7 +111,7 @@ private:
 
 	[[nodiscard]] Vector3d ComputeNormal(Vector3d const& p) const
 	{
-		const double eps = 1e-3; // Чуть больше — стабильнее
+		constexpr double eps = 1e-3;
 
 		const double fx1 = EvaluateField(p + Vector3d(eps, 0, 0));
 		const double fx2 = EvaluateField(p - Vector3d(eps, 0, 0));
@@ -145,4 +138,8 @@ private:
 			hitPoint, hitPointInObjectSpace,
 			hitNormal, normalInObjectSpace };
 	}
+
+	std::vector<Metasphere> m_spheres;
+	double m_isoThreshold;
+	AABB m_aabb;
 };
