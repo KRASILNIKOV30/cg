@@ -56,7 +56,7 @@ public:
 private:
 	[[nodiscard]] static double GetShadow(Vector3d const& surfacePoint, ILightSource const& light, Scene const& scene)
 	{
-		constexpr int shadowSamples = 50;
+		constexpr int shadowSamples = 400;
 		int reached = 0;
 		Intersection intersection;
 		SceneObject const* sceneObj;

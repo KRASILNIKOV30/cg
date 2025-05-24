@@ -137,12 +137,11 @@ void RaytraceView::AddSomeTorus()
 void RaytraceView::AddSomeMetaball()
 {
 	const Matrix4d transform;
-	SimpleMaterial material({ 0.4, 0.4, 0.8, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	SimpleMaterial material({ 0.4, 0.5, 0.8, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
 	const auto shader = std::make_shared<SimpleDiffuseShader>(material);
 	const Metasphere metasphere1{ { 0, 1.5, 0 }, 1.0, 1.0 };
-	const Metasphere metasphere2{ { -1, 1.0, 0 }, 1.0, 1.5 };
-	const Metasphere metasphere3{ { -2, 2.0, 2 }, 0.5, 1.5 };
-	AddMetaball(shader, { metasphere1, metasphere2, metasphere3 }, { 1, 1, 1 }, transform);
+	const Metasphere metasphere2{ { -1, 1.0, 0 }, 1.0, 1.5 }; //
+	AddMetaball(shader, { metasphere1, metasphere2 }, { 1, 1, 1 }, transform);
 }
 
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
