@@ -5,6 +5,7 @@
 #include "../objects/Sphere.h"
 #include "../light/OmniLightSource.h"
 #include "../objects/Paraboloid.h"
+#include "../objects/Torus.h"
 #include "../shader/PhongLightShader.h"
 
 RaytraceView::RaytraceView(int width, int height)
@@ -22,11 +23,6 @@ RaytraceView::~RaytraceView()
 
 void RaytraceView::OnUpdate()
 {
-	unsigned renderedChunks, totalChunks;
-	if (m_renderer.GetProgress(renderedChunks, totalChunks))
-	{
-		// Рендеринг завершен
-	}
 }
 
 void RaytraceView::OnRender()
@@ -49,9 +45,11 @@ void RaytraceView::InitializeScene()
 	m_scene.SetBackdropColor(Vector4f(0.8, 0.1, 0.8, 1));
 
 	AddSomePlane();
-	//AddSomeSpheres();
-	AddSomeParaboloid();
 	AddSomeLight();
+
+	//AddSomeSpheres();
+	//AddSomeParaboloid();
+	AddSomeTorus();
 
 	const auto width = GetWidth();
 	const auto height = GetHeight();
@@ -114,6 +112,14 @@ void RaytraceView::AddSomeParaboloid()
 	AddParaboloid(blueShader, 0.5, Vector3d(0, 0, 2.5), transform);
 }
 
+void RaytraceView::AddSomeTorus()
+{
+	const Matrix4d transform;
+	SimpleMaterial blue({ 0.3, 0.2, 0.8, 1 }, { 0.3, 0.3, 0.4, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	const auto blueShader = std::make_shared<PhongLightShader>(blue);
+	AddTorus(blueShader, 1.0, 0.2, Vector3d(0, 0, 0), transform);
+}
+
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
 {
 	return AddSceneObject(std::make_shared<Plane>(a, b, c, d, transform), shader);
@@ -131,10 +137,12 @@ SceneObject& RaytraceView::AddParaboloid(std::shared_ptr<IShader const> const& s
 	return AddSceneObject(std::make_shared<Paraboloid>(scale, center, transform), shader);
 }
 
+SceneObject& RaytraceView::AddTorus(std::shared_ptr<IShader const> const& shader, double majorRadius, double minorRadius, Vector3d const& center, Matrix4d const& transform)
+{
+	return AddSceneObject(std::make_shared<Torus>(majorRadius, minorRadius, center, transform), shader);
+}
+
 SceneObject& RaytraceView::AddSphere(std::shared_ptr<IShader const> const& shader, double radius, Vector3d const& center, Matrix4d const& transform)
 {
 	return AddSceneObject(std::make_shared<Sphere>(radius, center, transform), shader);
 }
-
-// Остальные методы (AddSphere, InitializeScene и т. д.) остаются без изменений,
-// как в предыдущей реализации, но без зависимостей от SDL2.

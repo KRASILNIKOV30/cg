@@ -11,10 +11,10 @@ public:
 	~RaytraceView() override;
 
 	SceneObject& AddSphere(std::shared_ptr<IShader const> const& shader, double radius = 1, Vector3d const& center = Vector3d(), Matrix4d const& transform = {});
-	//SceneObject& AddConicCylinder(std::shared_ptr<IShader const> shader, double height = 1, double baseRadius = 1, double capRadius = 0, CMatrix4d const& transform = {});
 	SceneObject& AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform = Matrix4d());
 	SceneObject& AddSceneObject(std::shared_ptr<IGeometryObject const> object, std::shared_ptr<IShader const> shader);
 	SceneObject& AddParaboloid(std::shared_ptr<IShader const> const& shader, double scale, Vector3d const& center, Matrix4d const& transform = {});
+	SceneObject& AddTorus(std::shared_ptr<IShader const> const& shader, double majorRadius, double minorRadius, Vector3d const& center, Matrix4d const& transform = {});
 
 private:
 	void OnUpdate() override;
@@ -25,7 +25,7 @@ private:
 	void AddSomeSpheres();
 	void AddSomeLight();
 	void AddSomeParaboloid();
-	// void AddSomeConicCylinders();
+	void AddSomeTorus();
 
 	RenderContext m_context;
 	Renderer m_renderer;

@@ -39,10 +39,12 @@ set(GEOMETRY_SOURCES
         shader/PhongLightShader.h
         random/Random.h
         objects/Paraboloid.h
+        objects/Torus.h
 )
 
 find_package(SDL2 REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_executable(phong
         ${GEOMETRY_SOURCES}
@@ -52,4 +54,5 @@ add_executable(phong
 target_link_libraries(phong PRIVATE
         SDL2::SDL2
         OpenMP::OpenMP_CXX
+        Eigen3::Eigen
 )
