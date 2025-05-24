@@ -60,7 +60,7 @@ void RaytraceView::InitializeScene()
 	m_context.SetProjectionMatrix(proj);
 
 	Matrix4d modelView;
-	modelView.LoadLookAtRH(0, 4, 4, 0, 2, 0, 0, 1, 0);
+	modelView.LoadLookAtRH(0, 4, 5, 0, 1.5, 0, 0, 1, 0);
 	m_context.SetModelViewMatrix(modelView);
 }
 
@@ -115,9 +115,20 @@ void RaytraceView::AddSomeParaboloid()
 void RaytraceView::AddSomeTorus()
 {
 	const Matrix4d transform;
+	SimpleMaterial green({ 0.2, 0.8, 0.3, 1 }, { 0.2, 0.4, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	SimpleMaterial red({ 0.8, 0.2, 0.3, 1 }, { 0.3, 0.4, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
 	SimpleMaterial blue({ 0.3, 0.2, 0.8, 1 }, { 0.3, 0.3, 0.4, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	SimpleMaterial yellow({ 0.8, 0.8, 0, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.4, 0.4, 0.4, 1 }, 100);
+
+	const auto greenShader = std::make_shared<PhongLightShader>(green);
+	const auto redShader = std::make_shared<PhongLightShader>(red);
 	const auto blueShader = std::make_shared<PhongLightShader>(blue);
-	AddTorus(blueShader, 1.0, 0.2, Vector3d(0, 0, 0), transform);
+	const auto yellowShader = std::make_shared<PhongLightShader>(yellow);
+
+	AddTorus(blueShader, 1.5, 0.4, Vector3d(0, 0, 0), transform);
+	AddTorus(redShader, 1.2, 0.35, Vector3d(0, 0.5, 0), transform);
+	AddTorus(greenShader, 1.0, 0.3, Vector3d(0, 1.0, 0), transform);
+	AddSphere(yellowShader, 0.9, { 0, 1.5, 0 }, transform);
 }
 
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
