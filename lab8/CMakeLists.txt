@@ -40,6 +40,8 @@ set(GEOMETRY_SOURCES
         random/Random.h
         objects/Paraboloid.h
         objects/Torus.h
+        objects/Metaball.h
+        objects/AABB.h
 )
 
 find_package(SDL2 REQUIRED)

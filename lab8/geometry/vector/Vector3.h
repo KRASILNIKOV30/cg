@@ -122,6 +122,11 @@ public:
 		return static_cast<T>(std::sqrt(x * x + y * y + z * z));
 	}
 
+	T GetLengthSquared() const noexcept
+	{
+		return x * x + y * y + z * z;
+	}
+
 	void Normalize() noexcept
 	{
 		T invLength = 1 / GetLength();

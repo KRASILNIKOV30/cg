@@ -1,4 +1,5 @@
 #pragma once
+#include "../objects/Metaball.h"
 #include "../window/Window.h"
 #include "../render/Renderer.h"
 #include "../scene/Scene.h"
@@ -15,6 +16,7 @@ public:
 	SceneObject& AddSceneObject(std::shared_ptr<IGeometryObject const> object, std::shared_ptr<IShader const> shader);
 	SceneObject& AddParaboloid(std::shared_ptr<IShader const> const& shader, double scale, Vector3d const& center, Matrix4d const& transform = {});
 	SceneObject& AddTorus(std::shared_ptr<IShader const> const& shader, double majorRadius, double minorRadius, Vector3d const& center, Matrix4d const& transform = {});
+	SceneObject& AddMetaball(std::shared_ptr<IShader const> const& shader, std::vector<Metasphere> const& sphere, Vector3d const& center, Matrix4d const& transform = {});
 
 private:
 	void OnUpdate() override;
@@ -26,6 +28,7 @@ private:
 	void AddSomeLight();
 	void AddSomeParaboloid();
 	void AddSomeTorus();
+	void AddSomeMetaball();
 
 	RenderContext m_context;
 	Renderer m_renderer;

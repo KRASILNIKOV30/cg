@@ -119,6 +119,11 @@ template <class T> inline Vector4<T> Min(Vector4<T> const& vec, T const& scalar)
 	return Vector4<T>(Min(vec.x, scalar), Min(vec.y, scalar), Min(vec.z, scalar), Min(vec.w, scalar));
 };
 
+template <class T> Vector3<T> Min(const Vector3<T>& a, const Vector3<T>& b)
+{
+	return Vector3<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+}
+
 
 /************************************************************************/
 /* Max - поиск максимума                                                */
@@ -143,6 +148,11 @@ template <class T> inline Vector4<T> Max(Vector4<T> const& vec, T const& scalar)
 {
 	return Vector4<T>(Max(vec.x, scalar), Max(vec.y, scalar), Max(vec.z, scalar), Max(vec.w, scalar));
 };
+
+template <class T> inline Vector3<T> Max(const Vector3<T>& a, const Vector3<T>& b)
+{
+	return Vector3<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+}
 
 
 /************************************************************************/

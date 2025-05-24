@@ -7,6 +7,7 @@
 #include "../objects/Paraboloid.h"
 #include "../objects/Torus.h"
 #include "../shader/PhongLightShader.h"
+#include "../shader/SimpleDiffuseShader.h"
 
 RaytraceView::RaytraceView(int width, int height)
 	: Window(width, height, "Raytracer"),
@@ -44,12 +45,14 @@ void RaytraceView::InitializeScene()
 {
 	m_scene.SetBackdropColor(Vector4f(0.8, 0.1, 0.8, 1));
 
+	//
 	AddSomePlane();
 	AddSomeLight();
 
 	//AddSomeSpheres();
 	//AddSomeParaboloid();
-	AddSomeTorus();
+	// AddSomeTorus();
+	AddSomeMetaball();
 
 	const auto width = GetWidth();
 	const auto height = GetHeight();
@@ -131,6 +134,17 @@ void RaytraceView::AddSomeTorus()
 	AddSphere(yellowShader, 0.9, { 0, 1.5, 0 }, transform);
 }
 
+void RaytraceView::AddSomeMetaball()
+{
+	const Matrix4d transform;
+	SimpleMaterial material({ 0.4, 0.4, 0.8, 1 }, { 0.2, 0.2, 0.2, 1 }, { 0.8, 0.8, 0.8, 1 }, 100);
+	const auto shader = std::make_shared<SimpleDiffuseShader>(material);
+	const Metasphere metasphere1{ { 0, 1.5, 0 }, 1.0, 1.0 };
+	const Metasphere metasphere2{ { -1, 1.0, 0 }, 1.0, 1.5 };
+	const Metasphere metasphere3{ { -2, 2.0, 2 }, 0.5, 1.5 };
+	AddMetaball(shader, { metasphere1, metasphere2, metasphere3 }, { 1, 1, 1 }, transform);
+}
+
 SceneObject& RaytraceView::AddPlane(const std::shared_ptr<IShader const>& shader, double a, double b, double c, double d, Matrix4d const& transform)
 {
 	return AddSceneObject(std::make_shared<Plane>(a, b, c, d, transform), shader);
@@ -151,6 +165,11 @@ SceneObject& RaytraceView::AddParaboloid(std::shared_ptr<IShader const> const& s
 SceneObject& RaytraceView::AddTorus(std::shared_ptr<IShader const> const& shader, double majorRadius, double minorRadius, Vector3d const& center, Matrix4d const& transform)
 {
 	return AddSceneObject(std::make_shared<Torus>(majorRadius, minorRadius, center, transform), shader);
+}
+
+SceneObject& RaytraceView::AddMetaball(std::shared_ptr<IShader const> const& shader, std::vector<Metasphere> const& spheres, Vector3d const& center, Matrix4d const& transform)
+{
+	return AddSceneObject(std::make_shared<Metaball>(spheres, center, transform), shader);
 }
 
 SceneObject& RaytraceView::AddSphere(std::shared_ptr<IShader const> const& shader, double radius, Vector3d const& center, Matrix4d const& transform)
