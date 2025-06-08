@@ -31,13 +31,12 @@ void main()
 	gl_FrontColor = mix(firstColor, secondColor, mod(pos.y, 0.1) * 10.0);
 }
 )",
-		             R"(
+			R"(
 void main()
 {
 	gl_FragColor = gl_Color;
 }
 )" }
-	// как во фрагментном шейдере узнать, к лицевой стороне примитива относится фрагмент или нет (выяснил)
 	{
 	}
 

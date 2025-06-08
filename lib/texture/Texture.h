@@ -63,7 +63,8 @@ private:
 	GLuint m_texture;
 };
 
-template <bool t_managed, class TBase> class TextureImpl : public TBase
+template <bool t_managed, class TBase>
+class TextureImpl : public TBase
 {
 public:
 	explicit TextureImpl(GLuint texture = 0)

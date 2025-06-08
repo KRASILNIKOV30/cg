@@ -1,6 +1,6 @@
 #pragma once
-#include <stdexcept>
 #include <GL/glew.h>
+#include <stdexcept>
 
 class GLEWInitializer
 {
