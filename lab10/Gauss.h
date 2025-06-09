@@ -9,7 +9,7 @@
 
 constexpr int RADIUS = 10;
 constexpr float SIGMA = 3.3f;
-constexpr float PERSISTENCE = 0.0f;
+constexpr float PERSISTENCE = 0.8f;
 
 class Gauss
 {
@@ -28,37 +28,57 @@ uniform sampler2D prevImage;
 uniform vec2 step;
 uniform float coefficients[10];
 uniform float persistence;
+uniform bool firstPass;
+#define GAMMA 2.2
+
+vec4 srgbToLinear(vec4 color) {
+	return vec4(pow(color.rgb, vec3(GAMMA)), color.a);
+}
+
+vec4 linearToSrgb(vec4 color) {
+	if (firstPass) {
+		return color;
+	}
+    return vec4(pow(color.rgb, vec3(1.0 / GAMMA)), color.a);
+}
+
+vec4 getSample(sampler2D image, vec2 pos) {
+	if (firstPass) {
+		return srgbToLinear(texture2D(image, pos));
+	}
+	return texture2D(image, pos);
+}
 
 void main()
 {
     vec2 pos = gl_TexCoord[0].st;
 
     vec4 color =
-        texture2D(image, pos) * coefficients[0] +
-        (texture2D(image, pos - step) +
-            texture2D(image, pos + step)) * coefficients[1] +
-        (texture2D(image, pos - 2.0 * step) +
-            texture2D(image, pos + 2.0 * step)) * coefficients[2] +
-        (texture2D(image, pos - 3.0 * step) +
-            texture2D(image, pos + 3.0 * step)) * coefficients[3] +
-        (texture2D(image, pos - 4.0 * step) +
-            texture2D(image, pos + 4.0 * step)) * coefficients[4] +
-        (texture2D(image, pos - 5.0 * step) +
-            texture2D(image, pos + 5.0 * step)) * coefficients[5] +
-        (texture2D(image, pos - 6.0 * step) +
-            texture2D(image, pos + 6.0 * step)) * coefficients[6] +
-        (texture2D(image, pos - 7.0 * step) +
-            texture2D(image, pos + 7.0 * step)) * coefficients[7] +
-        (texture2D(image, pos - 8.0 * step) +
-            texture2D(image, pos + 8.0 * step)) * coefficients[8] +
-        (texture2D(image, pos - 9.0 * step) +
-            texture2D(image, pos + 9.0 * step)) * coefficients[9];
+        getSample(image, pos) * coefficients[0] +
+        (getSample(image, pos - step) +
+            getSample(image, pos + step)) * coefficients[1] +
+        (getSample(image, pos - 2.0 * step) +
+            getSample(image, pos + 2.0 * step)) * coefficients[2] +
+        (getSample(image, pos - 3.0 * step) +
+            getSample(image, pos + 3.0 * step)) * coefficients[3] +
+        (getSample(image, pos - 4.0 * step) +
+            getSample(image, pos + 4.0 * step)) * coefficients[4] +
+        (getSample(image, pos - 5.0 * step) +
+            getSample(image, pos + 5.0 * step)) * coefficients[5] +
+        (getSample(image, pos - 6.0 * step) +
+            getSample(image, pos + 6.0 * step)) * coefficients[6] +
+        (getSample(image, pos - 7.0 * step) +
+            getSample(image, pos + 7.0 * step)) * coefficients[7] +
+        (getSample(image, pos - 8.0 * step) +
+            getSample(image, pos + 8.0 * step)) * coefficients[8] +
+        (getSample(image, pos - 9.0 * step) +
+            getSample(image, pos + 9.0 * step)) * coefficients[9];
 
-	vec4 prevColor = texture2D(prevImage, pos);
-	float cutoff = 0.01;
+	vec4 prevColor = srgbToLinear(texture2D(prevImage, pos));
+	float cutoff = 0.005;
     vec4 fadedPrevColor = max(prevColor * persistence - cutoff, 0.0);
 
-    gl_FragColor = max(color, fadedPrevColor);
+    gl_FragColor = linearToSrgb(max(color, fadedPrevColor));
 }
 )" }
 	{
@@ -67,6 +87,7 @@ void main()
 		m_coefficientsLocation = m_program.GetUniformLocation("coefficients");
 		m_prevImageLocation = m_program.GetUniformLocation("prevImage");
 		m_persistenceLocation = m_program.GetUniformLocation("persistence");
+		m_firstPassLocation = m_program.GetUniformLocation("firstPass");
 	}
 
 	GLuint Blur(GLuint texture, int width, int height) const
@@ -141,6 +162,7 @@ private:
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		glUniform1i(m_firstPassLocation, GL_TRUE);
 		glUniform1f(m_persistenceLocation, 0.0f);
 		glUniform2f(m_stepLocation, 1.0f / static_cast<float>(m_width), 0);
 
@@ -165,6 +187,7 @@ private:
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, m_prev);
 
+		glUniform1i(m_firstPassLocation, GL_FALSE);
 		glUniform1f(m_persistenceLocation, PERSISTENCE);
 		glUniform2f(m_stepLocation, 0, 1.0f / static_cast<float>(m_height));
 
@@ -310,6 +333,7 @@ private:
 	GLint m_coefficientsLocation;
 	GLint m_prevImageLocation;
 	GLint m_persistenceLocation;
+	GLint m_firstPassLocation;
 
 	mutable Texture2D m_prev;
 	mutable FrameBuffer m_frameBuffer;
