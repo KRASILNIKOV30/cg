@@ -9,6 +9,7 @@
 
 constexpr int RADIUS = 10;
 constexpr float SIGMA = 3.3f;
+constexpr float PERSISTENCE = 0.5f;
 
 class Gauss
 {
@@ -23,8 +24,10 @@ void main()
 )",
 			R"(
 uniform sampler2D image;
+uniform sampler2D prevImage;
 uniform vec2 step;
-uniform float coefficients[20];
+uniform float coefficients[10];
+uniform float persistence;
 
 void main()
 {
@@ -51,13 +54,17 @@ void main()
         (texture2D(image, pos - 9.0 * step) +
             texture2D(image, pos + 9.0 * step)) * coefficients[9];
 
-    gl_FragColor = color;
+	vec4 prevColor = texture2D(prevImage, pos);
+
+    gl_FragColor = color + prevColor * persistence;
 }
 )" }
 	{
 		m_stepLocation = m_program.GetUniformLocation("step");
 		m_imageLocation = m_program.GetUniformLocation("image");
 		m_coefficientsLocation = m_program.GetUniformLocation("coefficients");
+		m_prevImageLocation = m_program.GetUniformLocation("prevImage");
+		m_persistenceLocation = m_program.GetUniformLocation("persistence");
 	}
 
 	GLuint Blur(GLuint texture, int width, int height) const
@@ -70,11 +77,15 @@ void main()
 
 		glUseProgram(m_program.GetId());
 		glUniform1i(m_imageLocation, 0);
+		glUniform1i(m_prevImageLocation, 1);
 		const auto gauss = CalcGauss();
 		glUniform1fv(m_coefficientsLocation, static_cast<GLsizei>(gauss.size()), gauss.data());
 
 		BlurHorizontal(texture);
 		BlurVertical();
+
+		m_isPrev1 = !m_isPrev1;
+		SaveTextureToPNG(m_prev1, width, height, "prev.png");
 
 		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
 		glUseProgram(0);
@@ -122,13 +133,16 @@ private:
 	{
 		// Выполняем привязку к переданному текстурному объекту
 		glEnable(GL_TEXTURE_2D);
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		// Задаем шаг выборки значений из текстуры
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glUniform1f(m_persistenceLocation, 0.0f);
 		glUniform2f(m_stepLocation, 1.0f / static_cast<float>(m_width), 0);
 
-		// Присоединяем 0 уровень деталей текстуры m_colorBuffer0
-		// в качестве буфера цвета во вспомогательном буфере кадра
 		FrameBuffer::SetTexture2D(
 			GL_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0,
@@ -144,10 +158,18 @@ private:
 
 	void BlurVertical() const
 	{
-		m_colorBuffer0.Bind();
+		Texture2D& readHistoryBuffer = m_isPrev1 ? m_prev1 : m_prev2;
+		Texture2D& writeHistoryBuffer = m_isPrev1 ? m_prev2 : m_prev1;
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_colorBuffer0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, readHistoryBuffer);
+
+		glUniform1f(m_persistenceLocation, PERSISTENCE);
 		glUniform2f(m_stepLocation, 0, 1.0f / static_cast<float>(m_height));
-		// Устанавливаем 0 уровень деталей текстуры m_colorBuffer0
-		// в качестве буфера цвета во вспомогательном буфере кадра
+
 		FrameBuffer::SetTexture2D(
 			GL_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0,
@@ -158,6 +180,34 @@ private:
 		assert(FrameBuffer::CheckStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
 		DrawRectangle();
+
+		glUseProgram(0);
+		glDisable(GL_BLEND);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_colorBuffer1);
+		glEnable(GL_TEXTURE_2D);
+
+		glColor4f(1, 1, 1, 1);
+
+		FrameBuffer::SetTexture2D(
+			GL_FRAMEBUFFER,
+			GL_COLOR_ATTACHMENT0,
+			GL_TEXTURE_2D,
+			writeHistoryBuffer, 0);
+
+		assert(FrameBuffer::CheckStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+		DrawRectangle();
+		glFlush();
+
+		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
+
+		SaveTextureToPNG(m_colorBuffer1, m_width, m_height, "cur.png");
+		SaveTextureToPNG(writeHistoryBuffer, m_width, m_height, "prev.png");
+
+		m_frameBuffer.Bind();
+
+		glUseProgram(m_program.GetId());
 	}
 
 	void DrawRectangle() const
@@ -188,10 +238,25 @@ private:
 
 	void PrepareFrameBuffer(int width, int height) const
 	{
+		auto initRenderTargetTexture = [&](Texture2D& tex) {
+			tex.Bind();
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+			Texture2D::TexImage(
+				0, GL_RGBA,
+				width, height,
+				0, GL_RGBA,
+				GL_UNSIGNED_BYTE, nullptr);
+		};
+
 		bool createFrameBuffer = !m_frameBuffer;
-		bool createTexture = createFrameBuffer || !m_colorBuffer0 || !m_colorBuffer1;
+		bool createTexture = createFrameBuffer || !m_colorBuffer0 || !m_colorBuffer1 || !m_prev1 || !m_prev2;
 		bool updateTextureImage = createTexture || (m_width != width) || (m_height != height);
-		bool updateMipmaps = updateTextureImage || createTexture;
 
 		if (createFrameBuffer)
 		{
@@ -202,58 +267,19 @@ private:
 		{
 			m_colorBuffer0.Create();
 			m_colorBuffer1.Create();
+			m_prev1.Create();
+			m_prev2.Create();
 		}
 
 		m_width = width;
 		m_height = height;
 
-		if (updateTextureImage || updateMipmaps)
-		{
-			m_colorBuffer0.Bind();
-		}
-
 		if (updateTextureImage)
 		{
-			m_colorBuffer0.Bind();
-			// Для первого буфера цвета фильтрация будет осуществляться с выбором
-			// ближайшего пикселя
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-			// Объявляем 0 уровень детализации текстурного изображения
-			Texture2D::TexImage(
-				0, GL_RGBA,
-				width, height,
-				0, GL_RGBA,
-				GL_UNSIGNED_BYTE, nullptr);
-		}
-
-		// Выбираем текстуру 1 буфера цвета
-		if (updateTextureImage || updateMipmaps)
-		{
-			m_colorBuffer1.Bind();
-		}
-
-		if (updateTextureImage)
-		{
-			// Объявляем 0 уровень детализации текстурного изображения
-			Texture2D::TexImage(
-				0, GL_RGBA,
-				static_cast<GLsizei>(m_width), static_cast<GLsizei>(m_height),
-				0, GL_RGBA,
-				GL_UNSIGNED_BYTE, nullptr);
-		}
-
-		if (updateMipmaps)
-		{
-			glTexParameteri(
-				GL_TEXTURE_2D,
-				GL_TEXTURE_MIN_FILTER,
-				GL_NEAREST);
-			glTexParameteri(
-				GL_TEXTURE_2D,
-				GL_TEXTURE_MAG_FILTER,
-				GL_NEAREST);
+			initRenderTargetTexture(m_colorBuffer0);
+			initRenderTargetTexture(m_colorBuffer1);
+			initRenderTargetTexture(m_prev1);
+			initRenderTargetTexture(m_prev2);
 		}
 	}
 
@@ -293,6 +319,12 @@ private:
 	GLint m_stepLocation;
 	GLint m_imageLocation;
 	GLint m_coefficientsLocation;
+	GLint m_prevImageLocation;
+	GLint m_persistenceLocation;
+
+	mutable Texture2D m_prev1;
+	mutable Texture2D m_prev2;
+	mutable bool m_isPrev1 = true;
 
 	mutable FrameBuffer m_frameBuffer;
 	mutable Texture2D m_colorBuffer0;
