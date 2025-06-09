@@ -7,8 +7,8 @@
 #include <vector>
 #include <iostream>
 
-constexpr int RADIUS = 20;
-constexpr float SIGMA = 6.6f;
+constexpr int RADIUS = 10;
+constexpr float SIGMA = 3.3f;
 
 class Gauss
 {
@@ -49,27 +49,7 @@ void main()
         (texture2D(image, pos - 8.0 * step) +
             texture2D(image, pos + 8.0 * step)) * coefficients[8] +
         (texture2D(image, pos - 9.0 * step) +
-            texture2D(image, pos + 9.0 * step)) * coefficients[9] +
-        (texture2D(image, pos - 10.0 * step) +
-            texture2D(image, pos + 10.0 * step)) * coefficients[10] +
-        (texture2D(image, pos - 11.0 * step) +
-            texture2D(image, pos + 11.0 * step)) * coefficients[11] +
-        (texture2D(image, pos - 12.0 * step) +
-            texture2D(image, pos + 12.0 * step)) * coefficients[12] +
-        (texture2D(image, pos - 13.0 * step) +
-            texture2D(image, pos + 13.0 * step)) * coefficients[13] +
-        (texture2D(image, pos - 14.0 * step) +
-            texture2D(image, pos + 14.0 * step)) * coefficients[14] +
-        (texture2D(image, pos - 15.0 * step) +
-            texture2D(image, pos + 15.0 * step)) * coefficients[15] +
-        (texture2D(image, pos - 16.0 * step) +
-            texture2D(image, pos + 16.0 * step)) * coefficients[16] +
-        (texture2D(image, pos - 17.0 * step) +
-            texture2D(image, pos + 17.0 * step)) * coefficients[17] +
-        (texture2D(image, pos - 18.0 * step) +
-            texture2D(image, pos + 18.0 * step)) * coefficients[18] +
-        (texture2D(image, pos - 19.0 * step) +
-            texture2D(image, pos + 19.0 * step)) * coefficients[19];
+            texture2D(image, pos + 9.0 * step)) * coefficients[9];
 
     gl_FragColor = color;
 }

@@ -33,9 +33,12 @@ private:
 	static void PushOrtho(int width, int height);
 	static void PopOrtho();
 	static void ApplyGlow(int width, int height, GLuint texture);
-
+	void GenerateStars();
+	void DrawStars();
+	
 private:
 	std::vector<Planet> m_planets = planets;
+	std::vector<Star> m_stars;
 	double m_animationTime = 0.0;
 
 	std::optional<GLEWInitializer> m_glewInitializer;

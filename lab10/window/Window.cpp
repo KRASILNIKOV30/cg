@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "../random/Random.h"
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/orthonormalize.hpp>
 
@@ -8,6 +9,7 @@ constexpr double FIELD_OF_VIEW = 60 * M_PI / 180.0;
 constexpr double Z_NEAR = 0.1;
 constexpr double Z_FAR = 100;
 constexpr int DOWNSAMPLE_FACTOR = 2;
+constexpr int STARS_NUM = 500;
 
 glm::dmat4x4 Orthonormalize(const glm::dmat4x4& m)
 {
@@ -90,6 +92,8 @@ void Window::OnResize(int width, int height)
 
 void Window::OnRunStart()
 {
+	GenerateStars();
+
 	const int glowWidth = m_width / DOWNSAMPLE_FACTOR;
 	const int glowHeight = m_height / DOWNSAMPLE_FACTOR;
 
@@ -159,6 +163,7 @@ GLuint Window::DrawGlowMap(int width, int height)
 	glDisable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 
+	DrawStars();
 	DrawSphere({ 0, 0, 0 }, 2.4f, { 1.0f, 1.0f, 0.0f, 1.0f });
 	DrawPlanets(true);
 
@@ -178,6 +183,7 @@ void Window::DrawScene(int width, int height)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
+	DrawStars();
 	DrawSphere({ 0, 0, 0 }, 2.2f, { 1.0f, 1.0f, 0.0f, 1.0f });
 
 	GLfloat lightPos[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -306,4 +312,38 @@ void Window::DrawPlanets(bool black)
 
 		glPopMatrix();
 	}
+}
+void Window::GenerateStars()
+{
+	m_stars.resize(STARS_NUM);
+	for (auto& star : m_stars)
+	{
+		float u = RandomFloat(-1, 1);
+		float v = RandomFloat(0, 2 * M_PI);
+		float radius = 30.0f;
+
+		star.pos.x = radius * sqrtf(1.0f - u * u) * static_cast<float>(std::cos(v));
+		star.pos.y = radius * sqrtf(1.0f - u * u) * static_cast<float>(std::sin(v));
+		star.pos.z = radius * u;
+		star.size = RandomFloat(0.5, 3.0); // Размер от 0.5 до 2.0
+	}
+}
+
+void Window::DrawStars()
+{
+	glDepthMask(GL_FALSE);
+	glEnable(GL_POINT_SMOOTH);
+
+	glColor3f(0.9f, 0.9f, 1.0f);
+	for (const auto& star : m_stars)
+	{
+		glPointSize(star.size);
+		glBegin(GL_POINTS);
+		{
+			glVertex3f(star.pos.x, star.pos.y, star.pos.z);
+		}
+		glEnd();
+	}
+
+	glDepthMask(GL_TRUE);
 }

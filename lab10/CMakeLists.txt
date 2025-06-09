@@ -34,6 +34,7 @@ add_executable(glow
         matrix/Matrix4.h
         ../lib/texture/TextureUtils.cpp
         window/Planets.h
+        random/Random.h
 )
 
 find_package(glfw3 REQUIRED)
