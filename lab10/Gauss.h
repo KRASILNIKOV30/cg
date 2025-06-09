@@ -9,7 +9,7 @@
 
 constexpr int RADIUS = 10;
 constexpr float SIGMA = 3.3f;
-constexpr float PERSISTENCE = 0.5f;
+constexpr float PERSISTENCE = 0.9f;
 
 class Gauss
 {
@@ -84,9 +84,6 @@ void main()
 		BlurHorizontal(texture);
 		BlurVertical();
 
-		m_isPrev1 = !m_isPrev1;
-		SaveTextureToPNG(m_prev1, width, height, "prev.png");
-
 		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
 		glUseProgram(0);
 		glDisable(GL_TEXTURE_2D);
@@ -158,14 +155,11 @@ private:
 
 	void BlurVertical() const
 	{
-		Texture2D& readHistoryBuffer = m_isPrev1 ? m_prev1 : m_prev2;
-		Texture2D& writeHistoryBuffer = m_isPrev1 ? m_prev2 : m_prev1;
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_colorBuffer0);
 
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, readHistoryBuffer);
+		glBindTexture(GL_TEXTURE_2D, m_prev);
 
 		glUniform1f(m_persistenceLocation, PERSISTENCE);
 		glUniform2f(m_stepLocation, 0, 1.0f / static_cast<float>(m_height));
@@ -193,7 +187,7 @@ private:
 			GL_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D,
-			writeHistoryBuffer, 0);
+			m_prev, 0);
 
 		assert(FrameBuffer::CheckStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
@@ -203,7 +197,7 @@ private:
 		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
 
 		SaveTextureToPNG(m_colorBuffer1, m_width, m_height, "cur.png");
-		SaveTextureToPNG(writeHistoryBuffer, m_width, m_height, "prev.png");
+		SaveTextureToPNG(m_prev, m_width, m_height, "prev.png");
 
 		m_frameBuffer.Bind();
 
@@ -255,7 +249,7 @@ private:
 		};
 
 		bool createFrameBuffer = !m_frameBuffer;
-		bool createTexture = createFrameBuffer || !m_colorBuffer0 || !m_colorBuffer1 || !m_prev1 || !m_prev2;
+		bool createTexture = createFrameBuffer || !m_colorBuffer0 || !m_colorBuffer1 || !m_prev;
 		bool updateTextureImage = createTexture || (m_width != width) || (m_height != height);
 
 		if (createFrameBuffer)
@@ -267,8 +261,7 @@ private:
 		{
 			m_colorBuffer0.Create();
 			m_colorBuffer1.Create();
-			m_prev1.Create();
-			m_prev2.Create();
+			m_prev.Create();
 		}
 
 		m_width = width;
@@ -278,8 +271,7 @@ private:
 		{
 			initRenderTargetTexture(m_colorBuffer0);
 			initRenderTargetTexture(m_colorBuffer1);
-			initRenderTargetTexture(m_prev1);
-			initRenderTargetTexture(m_prev2);
+			initRenderTargetTexture(m_prev);
 		}
 	}
 
@@ -322,10 +314,7 @@ private:
 	GLint m_prevImageLocation;
 	GLint m_persistenceLocation;
 
-	mutable Texture2D m_prev1;
-	mutable Texture2D m_prev2;
-	mutable bool m_isPrev1 = true;
-
+	mutable Texture2D m_prev;
 	mutable FrameBuffer m_frameBuffer;
 	mutable Texture2D m_colorBuffer0;
 	mutable Texture2D m_colorBuffer1;
