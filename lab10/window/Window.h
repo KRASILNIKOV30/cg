@@ -4,6 +4,7 @@
 
 #include "../vector/VectorMath.h"
 #include "../Gauss.h"
+#include "Planets.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 #include <optional>
@@ -25,10 +26,20 @@ private:
 	void OnKey(int /*key*/, int /*scanCode*/, int /*action*/, int /*mods*/) override;
 	void OnIdle(double deltaTime) override;
 	void DrawSphere(const Vector3f& pos, double radius, const Vector4f& color);
+	void DrawPlanets();
+	GLuint DrawGlowMap(int width, int height);
+	void DrawScene(int width, int height);
+	static void DrawRectangle(int width, int height);
+	static void PushOrtho(int width, int height);
+	static void PopOrtho();
+	static void ApplyGlow(int width, int height, GLuint texture);
 
 private:
+	std::vector<Planet> m_planets = planets;
+	double m_animationTime = 0.0;
+
 	std::optional<GLEWInitializer> m_glewInitializer;
-	static constexpr double DISTANCE_TO_ORIGIN = 5;
+	static constexpr double DISTANCE_TO_ORIGIN = 15;
 	bool m_leftButtonPressed = false;
 	glm::dvec2 m_mousePos = {};
 	glm::dmat4x4 m_cameraMatrix = glm::lookAt(

@@ -84,7 +84,6 @@ void Window::OnResize(int width, int height)
 	glBindRenderbuffer(GL_RENDERBUFFER, m_glowDepthBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, glowWidth, glowHeight);
 
-	// Отвязываем все для чистоты
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
@@ -96,9 +95,6 @@ void Window::OnRunStart()
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
-	GLfloat lightPos[] = { -5.0f, 5.0f, 7.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -147,68 +143,52 @@ void Window::InitShaders()
 	m_blur.emplace();
 }
 
-void Window::Draw(int width, int height)
+GLuint Window::DrawGlowMap(int width, int height)
 {
 	const int glowWidth = width / DOWNSAMPLE_FACTOR;
 	const int glowHeight = height / DOWNSAMPLE_FACTOR;
 
-	// ===================================================================
-	// 1. ПРОХОД ДЛЯ СВЕЧЕНИЯ (рендер в m_glowFBO)
-	// ===================================================================
 	glBindFramebuffer(GL_FRAMEBUFFER, m_glowFBO);
 	glViewport(0, 0, glowWidth, glowHeight);
 
-	// Освещение здесь не нужно, мы управляем цветом напрямую.
-	glDisable(GL_LIGHTING);
-
-	// Очищаем буферы. Цвет фона черный, т.к. только светящиеся объекты вносят вклад.
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_LIGHTING);
 
+	DrawSphere({ 0, 0, 0 }, 2.2f, { 1.0f, 1.0f, 0.0f, 1.0f });
+
+	GLuint blurredTexture = m_blur->Blur(m_glowTexture, glowWidth, glowHeight);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return blurredTexture;
+}
+
+void Window::DrawScene(int width, int height)
+{
 	SetupCameraMatrix();
 
-	// Рисуем объекты, которые должны светиться, их цветом свечения.
-	// Если бы были другие, не светящиеся объекты, мы бы нарисовали их черным.
-	DrawSphere({ 0, 0, 0 }, 1.1f, { 1.0f, 1.0f, 0.0f, 1.0f });
-
-	// ===================================================================
-	// 2. ПРОХОД РАЗМЫТИЯ
-	// ===================================================================
-	// Этот этап у вас работает корректно.
-	// FBO и состояния OpenGL управляются внутри m_blur->Blur
-	GLuint blurredTexture = m_blur->Blur(m_glowTexture, glowWidth, glowHeight);
-	// SaveTextureToPNG(blurredTexture, )
-	// ===================================================================
-	// 3. ОСНОВНОЙ ПРОХОД (рендер в главный буфер)
-	// ===================================================================
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, width, height);
-
-	// Очищаем главный экран
-	glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Включаем все, что нужно для нормальной сцены
-	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 
-	SetupCameraMatrix();
+	DrawSphere({ 0, 0, 0 }, 2.2f, { 1.0f, 1.0f, 0.0f, 1.0f });
 
-	// Рисуем обычную сцену. Солнце рисуем ЧУТЬ ТЕМНЕЕ, чтобы было куда добавлять яркость.
-	DrawSphere({ 0, 0, 0 }, 1.0f, { 0.8f, 0.8f, 0.0f, 1.0f });
+	GLfloat lightPos[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+	glEnable(GL_LIGHTING);
 
-	// ===================================================================
-	// 4. ПРОХОД НАЛОЖЕНИЯ (композитинг)
-	// ===================================================================
-	// Отключаем все, что может помешать рисовать 2D-прямоугольник
+	DrawPlanets();
+}
+
+void Window::PushOrtho(int width, int height)
+{
+	glDepthMask(GL_FALSE);
 	glDisable(GL_LIGHTING);
-	glDisable(GL_DEPTH_TEST);
-
-	// Включаем аддитивное смешивание
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	// Настраиваем 2D-проекцию для рисования на весь экран
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
@@ -217,48 +197,61 @@ void Window::Draw(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+}
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, blurredTexture);
-
-	// Устанавливаем цвет модуляции в белый, чтобы цвет текстуры не искажался.
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-	// Рисуем полноэкранный прямоугольник
-	glBegin(GL_QUADS);
-	{
-		// Верхний левый
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(0.0f, 0.0f);
-
-		// Нижний левый
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(0.0f, height);
-
-		// Нижний правый
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(width, height);
-
-		// Верхний правый
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(width, 0.0f);
-	}
-	glEnd();
-
-	// ===================================================================
-	// 5. Восстановление состояний OpenGL
-	// ===================================================================
+void Window::PopOrtho()
+{
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 
-	glDisable(GL_TEXTURE_2D);
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
-	// Восстанавливаем только то, что может понадобиться в следующем кадре
-	// или другим частям программы.
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
+}
+
+void Window::ApplyGlow(int width, int height, GLuint texture)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	DrawRectangle(width, height);
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void Window::Draw(int width, int height)
+{
+	const auto blurredTexture = DrawGlowMap(width, height);
+	DrawScene(width, height);
+
+	PushOrtho(width, height);
+	ApplyGlow(width, height, blurredTexture);
+	PopOrtho();
+}
+
+void Window::DrawRectangle(int width, int height)
+{
+	const auto w = static_cast<float>(width);
+	const auto h = static_cast<float>(height);
+
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2f(0.0f, 0.0f);
+
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2f(0.0f, h);
+
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2f(w, h);
+
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2f(w, 0.0f);
+	}
+	glEnd();
 }
 
 void Window::SetupCameraMatrix()
@@ -273,20 +266,33 @@ void Window::OnKey(int key, int /*scanCode*/, int action, int /*mods*/)
 
 void Window::OnIdle(double deltaTime)
 {
-	/*if (m_morphingObject)
-	{
-		m_morphingObject->OnIdle(deltaTime);
-	}*/
+	m_animationTime += deltaTime;
 }
+
 void Window::DrawSphere(const Vector3f& pos, double radius, const Vector4f& color)
 {
 	glPushMatrix();
 	glTranslated(pos.x, pos.y, pos.z);
-
-	// Материал сферы
+	
 	glColor4f(color.x, color.y, color.z, color.w);
 
 	gluSphere(m_sphereQuadric, radius, 32, 32);
 
 	glPopMatrix();
+}
+
+void Window::DrawPlanets()
+{
+	for (const auto& planet : m_planets)
+	{
+		glPushMatrix();
+
+		const double angle = m_animationTime * planet.speed;
+		glRotated(angle, 0.0, 1.0, 0.0);
+		glTranslated(planet.orbitRadius, 0, 0);
+		glColor4f(planet.color.x, planet.color.y, planet.color.z, planet.color.w);
+		gluSphere(m_sphereQuadric, planet.radius, 32, 32);
+
+		glPopMatrix();
+	}
 }
