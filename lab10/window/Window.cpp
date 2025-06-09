@@ -99,6 +99,7 @@ void Window::OnRunStart()
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -179,7 +180,7 @@ void Window::DrawScene(int width, int height)
 	SetupCameraMatrix();
 
 	glViewport(0, 0, width, height);
-	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.05f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
@@ -325,7 +326,7 @@ void Window::GenerateStars()
 		star.pos.x = radius * sqrtf(1.0f - u * u) * static_cast<float>(std::cos(v));
 		star.pos.y = radius * sqrtf(1.0f - u * u) * static_cast<float>(std::sin(v));
 		star.pos.z = radius * u;
-		star.size = RandomFloat(0.5, 3.0); // Размер от 0.5 до 2.0
+		star.size = RandomFloat(0.5, 5.0); // Размер от 0.5 до 2.0
 	}
 }
 

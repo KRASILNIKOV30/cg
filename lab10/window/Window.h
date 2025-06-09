@@ -35,7 +35,7 @@ private:
 	static void ApplyGlow(int width, int height, GLuint texture);
 	void GenerateStars();
 	void DrawStars();
-	
+
 private:
 	std::vector<Planet> m_planets = planets;
 	std::vector<Star> m_stars;

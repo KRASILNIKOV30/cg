@@ -9,7 +9,7 @@
 
 constexpr int RADIUS = 10;
 constexpr float SIGMA = 3.3f;
-constexpr float PERSISTENCE = 0.9f;
+constexpr float PERSISTENCE = 0.0f;
 
 class Gauss
 {
@@ -55,8 +55,10 @@ void main()
             texture2D(image, pos + 9.0 * step)) * coefficients[9];
 
 	vec4 prevColor = texture2D(prevImage, pos);
+	float cutoff = 0.01;
+    vec4 fadedPrevColor = max(prevColor * persistence - cutoff, 0.0);
 
-    gl_FragColor = color + prevColor * persistence;
+    gl_FragColor = max(color, fadedPrevColor);
 }
 )" }
 	{
@@ -83,6 +85,8 @@ void main()
 
 		BlurHorizontal(texture);
 		BlurVertical();
+
+		CopyTexture(m_colorBuffer1, m_prev);
 
 		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
 		glUseProgram(0);
@@ -174,11 +178,14 @@ private:
 		assert(FrameBuffer::CheckStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
 		DrawRectangle();
+	}
 
+	void CopyTexture(GLuint const& src, Texture2D& dst) const
+	{
 		glUseProgram(0);
 		glDisable(GL_BLEND);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_colorBuffer1);
+		glBindTexture(GL_TEXTURE_2D, src);
 		glEnable(GL_TEXTURE_2D);
 
 		glColor4f(1, 1, 1, 1);
@@ -187,20 +194,10 @@ private:
 			GL_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D,
-			m_prev, 0);
+			dst, 0);
 
 		assert(FrameBuffer::CheckStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
 		DrawRectangle();
-		glFlush();
-
-		FrameBuffer::Bind(GL_FRAMEBUFFER, 0);
-
-		SaveTextureToPNG(m_colorBuffer1, m_width, m_height, "cur.png");
-		SaveTextureToPNG(m_prev, m_width, m_height, "prev.png");
-
-		m_frameBuffer.Bind();
-
 		glUseProgram(m_program.GetId());
 	}
 
