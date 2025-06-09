@@ -153,9 +153,14 @@ GLuint Window::DrawGlowMap(int width, int height)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDisable(GL_LIGHTING);
 
-	DrawSphere({ 0, 0, 0 }, 2.2f, { 1.0f, 1.0f, 0.0f, 1.0f });
+	SetupCameraMatrix();
+
+	glDisable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+
+	DrawSphere({ 0, 0, 0 }, 2.4f, { 1.0f, 1.0f, 0.0f, 1.0f });
+	DrawPlanets(true);
 
 	GLuint blurredTexture = m_blur->Blur(m_glowTexture, glowWidth, glowHeight);
 
@@ -179,12 +184,12 @@ void Window::DrawScene(int width, int height)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 	glEnable(GL_LIGHTING);
 
-	DrawPlanets();
+	DrawPlanets(false);
 }
 
 void Window::PushOrtho(int width, int height)
 {
-	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST); // Отключаем тест глубины, он больше не нужен
 	glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -206,7 +211,6 @@ void Window::PopOrtho()
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 
-	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 }
@@ -273,7 +277,7 @@ void Window::DrawSphere(const Vector3f& pos, double radius, const Vector4f& colo
 {
 	glPushMatrix();
 	glTranslated(pos.x, pos.y, pos.z);
-	
+
 	glColor4f(color.x, color.y, color.z, color.w);
 
 	gluSphere(m_sphereQuadric, radius, 32, 32);
@@ -281,7 +285,7 @@ void Window::DrawSphere(const Vector3f& pos, double radius, const Vector4f& colo
 	glPopMatrix();
 }
 
-void Window::DrawPlanets()
+void Window::DrawPlanets(bool black)
 {
 	for (const auto& planet : m_planets)
 	{
@@ -290,7 +294,14 @@ void Window::DrawPlanets()
 		const double angle = m_animationTime * planet.speed;
 		glRotated(angle, 0.0, 1.0, 0.0);
 		glTranslated(planet.orbitRadius, 0, 0);
-		glColor4f(planet.color.x, planet.color.y, planet.color.z, planet.color.w);
+		if (black)
+		{
+			glColor4f(0, 0, 0, 1);
+		}
+		else
+		{
+			glColor4f(planet.color.x, planet.color.y, planet.color.z, planet.color.w);
+		}
 		gluSphere(m_sphereQuadric, planet.radius, 32, 32);
 
 		glPopMatrix();

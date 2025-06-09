@@ -26,7 +26,7 @@ private:
 	void OnKey(int /*key*/, int /*scanCode*/, int /*action*/, int /*mods*/) override;
 	void OnIdle(double deltaTime) override;
 	void DrawSphere(const Vector3f& pos, double radius, const Vector4f& color);
-	void DrawPlanets();
+	void DrawPlanets(bool black);
 	GLuint DrawGlowMap(int width, int height);
 	void DrawScene(int width, int height);
 	static void DrawRectangle(int width, int height);
